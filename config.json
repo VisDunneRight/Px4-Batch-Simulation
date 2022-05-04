@@ -1,0 +1,14 @@
+{
+  "mavlink_connection": "",
+  "test_directory":"./",
+  "tests":[
+    {
+      "name":"Mission 1",
+      "excutable": "DroneKit-mission.py"
+    },
+    {
+      "name":"Mission 2",
+      "excutable": "DroneKit-mission.py"
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+#!/usr/bin/env python3
+
+import json
+import sys
+import argparse
+import psutil
+import os
+import datetime
+import subprocess
+import time
+from logger_helper import color, colorize
+from typing import Any, Dict, List, NoReturn, TextIO
+
+def main() -> NoReturn:
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-s","--simulator", help="Simulation to use: Gazebo, JMavSim or AirSim",
+  default="Gazebo")
+  parser.add_argument("--log-dir",
+                        help="Directory for log files", default="logs")
+  parser.add_argument("--speed-factor", default=1,
+                        help="how fast to run the simulation")
+  parser.add_argument("--abort-early", action='store_true',
+                        help="abort on first unsuccessful test")
+  parser.add_argument("--verbose", default=False, action='store_true',
+                        help="enable more verbose output")
+  parser.add_argument("config_file", help="JSON config file to use")
+  parser.add_argument("--build-dir", type=str,
+                        default='px4Developer/Firmware/',
+                        help="relative path where the px4 built files are stored")                      
+
+  args = parser.parse_args()
+  with open(args.config_file) as json_file:
+        config = json.load(json_file)
+  if not isEverythingReady(config, args):
+    sys.exit(1)
+  if args.verbose:
+    print("Starting testing of missions.")
+  tester = Tester(
+        config,
+        args.simulator,
+        args.abort_early,
+        args.speed_factor,
+        args.log_dir,
+        args.verbose,
+        args.build_dir
+    )
+
+  sys.exit(0 if tester.run() else 1)
+
+
+def isRunning(process_name: str) -> bool:
+    for proc in psutil.process_iter(attrs=['name']):
+        if proc.info['name'] == process_name:
+            return True
+    return False
+
+
+def isEverythingReady(config: Dict[str, str], args: Dict[str,str]) -> bool:
+    result = True
+
+    if isRunning('px4'):
+        print("px4 process already running\n"
+              "run `killall px4` and try again")
+        result = False
+    if not os.path.isdir(args.build_dir):
+        print("PX4 is not placed in build_dir\n"
+              "Make sure to install PX4 or correctly link to it before running this script "
+              )
+        result = False
+    if args.simulator == 'Gazebo':
+        if isRunning('gzserver'):
+            print("gzserver process already running\n"
+                  "run `killall gzserver` and try again")
+            result = False
+        if isRunning('gzclient'):
+            print("gzclient process already running\n"
+                  "run `killall gzclient` and try again")
+            result = False
+
+    if not os.path.isdir(config['test_directory']):
+        print("Cannot find directory containing tests\n"
+              "Update config file with correct location")
+        result = False
+
+    return result
+
+
+class Tester:
+  def __init__(self,
+                config: Dict[str, Any],
+                simulator: str,
+                abort_early: bool,
+                speed_factor: float,
+                log_dir: str,
+                verbose: bool,
+                build_dir: str):
+    self.config = config
+    self.build_dir = build_dir
+    self.simulator = simulator
+    # self.active_runners: List[ph.Runner]
+    self.abort_early = abort_early
+    self.tests = config['tests']
+    self.speed_factor = speed_factor
+    self.log_dir = log_dir
+    self.verbose = verbose
+    self.start_time = datetime.datetime.now()
+    self.log_fd: Any[TextIO] = None
+
+  def numCases(self) -> int:
+    return len(self.tests)
+
+  def run(self) -> bool:
+    # self.show_plans()
+    # self.prepare_for_results()
+    self.runTests()
+    # self.show_detailed_results()
+    # self.show_overall_result()
+    return True
+
+  def runTests(self) -> None:
+    for index, test in enumerate(self.tests):
+      print("--> Test case {} of {}: '{}' running ...".
+                      format(index + 1,
+                             self.numCases(),
+                             test['name']))
+      # log_dir = self.get_log_dir(iteration, test['model'], key)
+      # if self.verbose:
+        # print("Creating log directory: {}".format(log_dir))
+      # os.makedirs(log_dir, exist_ok=True)
+      #TODO:Pass log_dir to test cases to save information
+      was_success = self.runTestCase(test)
+
+      print("--- Test case {} of {}: '{}' {}."
+            .format(index + 1,
+                    self.numCases(),
+                    test['name'],
+                    colorize("succeeded", color.GREEN)
+                    if was_success
+                    else colorize("failed", color.RED)))
+
+      if not was_success and self.abort_early:
+          print("Aborting early")
+          return
+
+    return
+    
+  #TODO: added check when case failed to run
+  def runTestCase(self, test:Dict[str, Any]) -> bool:
+    process = subprocess.Popen(
+      [ "make", "HEADLESS=1", "px4_sitl", "gazebo"],
+      cwd="px4Developer/Firmware/",
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      universal_newlines=True
+    )
+    time.sleep(2)
+    mission = subprocess.run(["python3", test['excutable']])
+    self.stopProcess(process)
+    return True
+
+
+  def stopProcess(self, process):
+    #Kill all process and get control back
+    returnCode = process.poll()
+    process.terminate()
+    try:
+      returnCode = process.wait(timeout=1)
+    except:
+      pass
+    if returnCode is None:
+      print("killing {}".format("Px4"))
+      process.kill()
+      returnCode = process.poll()
+    #Gets control back to the shell
+    os.system('stty sane') 
+      
+if __name__ == '__main__':
+    main()
