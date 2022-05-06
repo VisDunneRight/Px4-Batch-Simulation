@@ -166,6 +166,7 @@ while nextwaypoint < len(vehicle.commands):
 # wait for the vehicle to land
 while vehicle.commands.next > 0:
     time.sleep(1)
+    print(vehicle.commands.next)
 
 
 # Disarm vehicle

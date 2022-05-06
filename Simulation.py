@@ -143,7 +143,7 @@ class Tester:
           return
 
     return
-    
+
   #TODO: added check when case failed to run
   def runTestCase(self, test:Dict[str, Any]) -> bool:
     process = subprocess.Popen(
@@ -154,10 +154,12 @@ class Tester:
       universal_newlines=True
     )
     time.sleep(2)
-    mission = subprocess.run(["python3", test['excutable']])
+    mission = subprocess.run(["python3", test['excutable']], cwd=self.config['test_directory'])
     self.stopProcess(process)
-    return True
-
+    if(mission.returncode > 0):
+      return False
+    else:
+      return True
 
   def stopProcess(self, process):
     #Kill all process and get control back

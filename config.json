@@ -1,14 +1,26 @@
 {
   "mavlink_connection": "",
-  "test_directory":"./",
+  "test_directory":"missions/",
   "tests":[
     {
-      "name":"Mission 1",
-      "excutable": "DroneKit-mission.py"
+      "name":"Mission 1: Takeoff and land",
+      "excutable": "square_flight_path.py"
     },
     {
-      "name":"Mission 2",
-      "excutable": "DroneKit-mission.py"
+      "name":"Mission 2: Square flight plan",
+      "excutable": "square_flight_path.py"
+    },
+    {
+      "name":"Mission 3: Fly in a circle",
+      "excutable": "square_flight_path.py"
+    },
+    {
+      "name":"Mission 4: Fly in random direction 4 times",
+      "excutable": "square_flight_path.py"
+    },
+    {
+      "name":"Mission 5: Fly in a square search pattern",
+      "excutable": "square_flight_path.py"
     }
   ]
 }
