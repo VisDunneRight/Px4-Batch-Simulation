@@ -8,6 +8,8 @@ import os
 import datetime
 import subprocess
 import time
+import threading
+import atexit
 from logger_helper import color, colorize
 from typing import Any, Dict, List, NoReturn, TextIO
 
@@ -103,8 +105,10 @@ class Tester:
     self.speed_factor = speed_factor
     self.log_dir = log_dir
     self.verbose = verbose
+    self.process = None
     self.start_time = datetime.datetime.now()
     self.log_fd: Any[TextIO] = None
+    self.stop_thread: Any[threading.Event] = None
 
   def numCases(self) -> int:
     return len(self.tests)
@@ -144,36 +148,59 @@ class Tester:
 
     return
 
+  def process_output(self) -> None:
+          assert self.process.stdout is not None
+          while True:
+              line = self.process.stdout.readline()
+              if not line and \
+                      (self.stop_thread.is_set() or self.poll is not None):
+                  break
+              if not line or line == "\n":
+                  continue
+              # line = self.add_prefix(10, self.name, line)
+              print(line,end='')
+
+
   #TODO: added check when case failed to run
   def runTestCase(self, test:Dict[str, Any]) -> bool:
-    process = subprocess.Popen(
+    atexit.register(self.stopProcess)
+    self.process = subprocess.Popen(
       [ "make", "HEADLESS=1", "px4_sitl", "gazebo"],
       cwd="px4Developer/Firmware/",
       stdout=subprocess.PIPE,
       stderr=subprocess.STDOUT,
       universal_newlines=True
     )
-    time.sleep(2)
+    self.stop_thread = threading.Event()
+    self.thread = threading.Thread(target=self.process_output)
+    self.thread.start()
+    time.sleep(3)
     mission = subprocess.run(["python3", test['excutable']], cwd=self.config['test_directory'])
-    self.stopProcess(process)
+    # self.process_output()
+    self.stopProcess()
     if(mission.returncode > 0):
       return False
     else:
       return True
 
-  def stopProcess(self, process):
+  def stopProcess(self):
     #Kill all process and get control back
-    returnCode = process.poll()
-    process.terminate()
+    atexit.unregister(self.stopProcess)
+    if not self.stop_thread:
+      return 0
+    returnCode = self.process.poll()
+    self.process.terminate()
     try:
-      returnCode = process.wait(timeout=1)
+      returnCode = self.process.wait(timeout=1)
     except:
       pass
     if returnCode is None:
       print("killing {}".format("Px4"))
-      process.kill()
-      returnCode = process.poll()
+      self.process.kill()
+      returnCode = self.process.poll()
     #Gets control back to the shell
+    self.stop_thread.set()
+    self.thread.join()
     os.system('stty sane') 
       
 if __name__ == '__main__':

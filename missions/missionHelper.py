@@ -36,18 +36,21 @@ class Mission:
       self.homePosSet = True
     self.vehicle.add_message_listener('HOME_POSITION', listener)
     def heartBeat(funSelf, attr_name, value):
-      if value > 5:
+      print(attr_name, value, end="\r")
+      if value > 2:
         print("Lost connection.")
+        self.reconnectVehicle()
         self.closeVehicle()
         exit(1)
     self.vehicle.add_attribute_listener('last_heartbeat', heartBeat)
 
 
   def reconnectVehicle(self):
-    while 1:
+    for i in range(5):
       try:
-          self.vehicle = connect(self.connection, wait_ready=True)
+          self.vehicle = connect(self.connection, wait_ready=False)
       except:
+          time.sleep(3)
           print("Couldn't connect, trying again.")
       else:
           break
