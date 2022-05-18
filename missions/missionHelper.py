@@ -126,7 +126,6 @@ class Mission:
   def monitorMission(self):
     # monitor mission execution
     nextwaypoint = self.vehicle.commands.next
-    print("got next point")
     while nextwaypoint < len(self.vehicle.commands):
         if self.vehicle.commands.next > nextwaypoint:
             display_seq = self.vehicle.commands.next+1

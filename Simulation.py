@@ -11,7 +11,7 @@ import time
 import threading
 import atexit
 from logger_helper import color, colorize
-from typing import Any, Dict, List, NoReturn, TextIO
+from typing import Any, Dict, List, NoReturn, Optional, TextIO
 
 def main() -> NoReturn:
   parser = argparse.ArgumentParser()
@@ -147,6 +147,8 @@ class Tester:
           return
 
     return
+  def poll(self) -> Optional[int]:
+        return self.process.poll()
 
   def process_output(self) -> None:
           assert self.process.stdout is not None
@@ -154,11 +156,13 @@ class Tester:
               line = self.process.stdout.readline()
               if not line and \
                       (self.stop_thread.is_set() or self.poll is not None):
+                  print("breaking process out")
                   break
               if not line or line == "\n":
                   continue
               # line = self.add_prefix(10, self.name, line)
               print(line,end='')
+              # print(line, self.stop_thread.is_set(), self.poll, end='')
 
 
   #TODO: added check when case failed to run
@@ -172,8 +176,8 @@ class Tester:
       universal_newlines=True
     )
     self.stop_thread = threading.Event()
-    self.thread = threading.Thread(target=self.process_output)
-    self.thread.start()
+    # self.thread = threading.Thread(target=self.process_output)
+    # self.thread.start()
     time.sleep(3)
     mission = subprocess.run(["python3", test['excutable']], cwd=self.config['test_directory'])
     # self.process_output()
@@ -200,7 +204,8 @@ class Tester:
       returnCode = self.process.poll()
     #Gets control back to the shell
     self.stop_thread.set()
-    self.thread.join()
+    print("Stop_thread set")
+    # self.thread.join()
     os.system('stty sane') 
       
 if __name__ == '__main__':
