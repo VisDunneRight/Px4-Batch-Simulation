@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from typing import Any, Dict, NoReturn
 import asyncio
 from mavsdk import System
@@ -14,6 +15,7 @@ class Mission:
     self.vehicle = None
     self.cmds = None
     self.homePosSet = False
+    self.runningTask = Any
 
   #Get arguments and connect information
   def getArguements(self)-> Dict[str, Any]:
@@ -32,6 +34,9 @@ class Mission:
         if state.is_connected:
             print("Drone discovered!")
             break
+    # printMissionProgressTask = asyncio.ensure_future(
+        # self.printMissionProgress())
+    # self.runningTask = [printMissionProgressTask]
 
 
   #Meta function to reduce the number of calls needed
@@ -43,10 +48,24 @@ class Mission:
     await self.vehicle.action.arm()
 
   async def startMission(self):
-    await self.vehicle.mission.start_mission()
+    # for i in range(4):
+      # try:
+        await self.vehicle.mission.start_mission()
+        # return
+      # except:
+        # pass
+        # print("Mission didn't start. ending mission")
+        # await asyncio.get_event_loop().shutdown_asyncgens()
+        # return
+
   
   async def uploadMission(self, missionPlan):
     await self.vehicle.mission.upload_mission(missionPlan)
+    print("Waiting for drone to have a global position estimate...")
+    async for health in self.vehicle.telemetry.health():
+        if health.is_global_position_ok and health.is_home_position_ok:
+            print("-- Global position estimate OK")
+            break
 
   def getOffsetFromLocationMeters(self, oriLat, oriLon, dNorth, dEast):
     earth_radius = 6378137.0    # Radius of "spherical" earth
@@ -59,6 +78,12 @@ class Mission:
     newlon = oriLon + (dLon * 180/math.pi)
     return newlat, newlon
 
+  async def printMissionProgress(self):
+    async for mission_progress in self.vehicle.mission.mission_progress():
+        print(f"Mission progress: "
+              f"{mission_progress.current}/"
+              f"{mission_progress.total}")
+
   async def droneInAir(self):
     """ Monitors whether the drone is flying or not and
     returns after landing """
@@ -67,8 +92,13 @@ class Mission:
     async for isInAir in self.vehicle.telemetry.in_air():
         if isInAir:
             wasInAir = isInAir
-
         if wasInAir and not isInAir:
+            # for task in self.runningTask:
+            #   task.cancel()
+            #   try:
+            #     await task
+            #   except asyncio.CancelledError:
+            #     pass
             await asyncio.get_event_loop().shutdown_asyncgens()
             return
 
@@ -169,28 +199,10 @@ async def main() -> NoReturn:
   await mission.startMission()
 
   await termination_task
-  print("--Finishing mission")
-
-async def print_mission_progress(drone):
-    async for mission_progress in drone.mission.mission_progress():
-        print(f"Mission progress: "
-              f"{mission_progress.current}/"
-              f"{mission_progress.total}")
+  print("-- Finishing mission")
 
 
-async def observe_is_in_air(drone):
-    """ Monitors whether the drone is flying or not and
-    returns after landing """
 
-    was_in_air = False
-
-    async for is_in_air in drone.telemetry.in_air():
-        if is_in_air:
-            was_in_air = is_in_air
-
-        if was_in_air and not is_in_air:
-            await asyncio.get_event_loop().shutdown_asyncgens()
-            return
 
 if __name__ == '__main__':
   loop = asyncio.get_event_loop()

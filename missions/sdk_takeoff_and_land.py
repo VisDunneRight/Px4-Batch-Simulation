@@ -41,12 +41,12 @@ async def main():
 
   print("-- Arming")
   await mission.arm()
-
+  
   print("-- Starting mission")
   await mission.startMission()
 
   await termination_task
-  print("--Finishing mission")
+  print("-- Finishing mission")
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()

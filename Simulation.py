@@ -132,17 +132,23 @@ class Tester:
         # print("Creating log directory: {}".format(log_dir))
       # os.makedirs(log_dir, exist_ok=True)
       #TODO:Pass log_dir to test cases to save information
-      was_success = self.runTestCase(test)
+      was_success = 0
+      for i in range(2):
+        was_success = self.runTestCase(test)
+        if was_success == 2:
+          print("Rerun test case.")
+          continue
+        break
 
       print("--- Test case {} of {}: '{}' {}."
             .format(index + 1,
                     self.numCases(),
                     test['name'],
                     colorize("succeeded", color.GREEN)
-                    if was_success
+                    if was_success == 0
                     else colorize("failed", color.RED)))
 
-      if not was_success and self.abort_early:
+      if was_success != 0 and self.abort_early:
           print("Aborting early")
           return
 
@@ -178,14 +184,22 @@ class Tester:
     self.stop_thread = threading.Event()
     # self.thread = threading.Thread(target=self.process_output)
     # self.thread.start()
-    time.sleep(3)
-    mission = subprocess.run(["python3", test['excutable']], cwd=self.config['test_directory'])
+    
+    time.sleep(10)
+    try:
+      mission = subprocess.run(["python3", test['excutable']],
+                              cwd=self.config['test_directory'],
+                              timeout=120)
+      if(mission.returncode > 0):
+        return 1
+      else:
+        return 0
+    except subprocess.TimeoutExpired:
+      print('Process ran too long')
     # self.process_output()
     self.stopProcess()
-    if(mission.returncode > 0):
-      return False
-    else:
-      return True
+    return 2
+    
 
   def stopProcess(self):
     #Kill all process and get control back
