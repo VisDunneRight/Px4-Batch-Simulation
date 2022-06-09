@@ -176,7 +176,7 @@ class Tester:
     atexit.register(self.stopProcess)
     self.process = subprocess.Popen(
       [ "make", "HEADLESS=1", "px4_sitl", "gazebo"],
-      cwd="px4Developer/Firmware/",
+      cwd=self.build_dir,
       stdout=subprocess.PIPE,
       stderr=subprocess.STDOUT,
       universal_newlines=True
