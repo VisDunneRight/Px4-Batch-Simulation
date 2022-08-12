@@ -1,0 +1,25 @@
+{
+  "mavlink_connection": "",
+  "test_directory":"missions/",
+  "tests":[
+    {
+      "name":"Mission 1: Takeoff and land",
+      "excutable": "sdk_takeoff_and_land.py"
+    },
+    {
+      "name":"Mission 2: Testing mission plan",
+      "excutable": "sdk_mission_import.py",
+      "command": "example-mission.plan"
+    },
+    {
+      "name":"Mission 3: testing second mission plane",
+      "excutable": "sdk_mission_import.py",
+      "command": "example-missionv2.plan"
+    },
+    {
+      "name":"Mission 4: testing csv import",
+      "excutable": "sdk_fly_in_circle.py",
+      "command":"mission.csv"
+    }
+  ]
+}

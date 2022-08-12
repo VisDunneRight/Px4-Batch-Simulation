@@ -187,9 +187,13 @@ class Tester:
     
     time.sleep(10)
     try:
-      mission = subprocess.run(["python3", test['excutable']],
+      missionCommand = ["python3", test['excutable']]
+      if "command" in test:
+        missionCommand.append(test['command'])
+      mission = subprocess.run(missionCommand,
                               cwd=self.config['test_directory'],
-                              timeout=120)
+                              timeout=160)
+                              
       if(mission.returncode > 0):
         return 1
       else:
