@@ -1,0 +1,5 @@
+x,y,altitude,speed,is_fly_through,gimbal_pitch_deg,gimbal_yaw_deg,camera_action,loiter_time_s,camera_photo_interval_s, acceptance_radius_m, yaw_deg,camera_photo_distance_m
+47.397741626132294,8.544924213007533,10,10,True,0,0,None,nan,nan,nan,nan,nan
+47.398249311957585,8.544924206259822,10,10,True,0,0,None,nan,nan,nan,nan,nan
+47.39822664479198,8.545560383312846,10,10,True,0,0,None,nan,nan,nan,nan,nan
+47.397742,8.5455939,10,10,True,0,0,None,nan,nan,nan,nan,nan

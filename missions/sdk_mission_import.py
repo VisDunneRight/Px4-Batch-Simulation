@@ -15,9 +15,9 @@ async def main():
   
   termination_task = asyncio.ensure_future(mission.droneInAir()) # keeps script running if drone in air
 
-  homeLat, homeLon = await mission.getHomeLatLon()
-  print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
-  await mission.vehicle.mission.clear_mission()
+  # homeLat, homeLon = await mission.getHomeLatLon()
+  # print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
+  # await mission.vehicle.mission.clear_mission()
 
 
   mission_import_data = await mission.vehicle.mission_raw.import_qgroundcontrol_mission(args[0])

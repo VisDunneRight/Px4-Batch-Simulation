@@ -174,13 +174,26 @@ class Tester:
   #TODO: added check when case failed to run
   def runTestCase(self, test:Dict[str, Any]) -> bool:
     atexit.register(self.stopProcess)
-    self.process = subprocess.Popen(
-      [ "make", "HEADLESS=1", "px4_sitl", "gazebo"],
-      cwd=self.build_dir,
-      stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT,
-      universal_newlines=True
-    )
+
+    if self.simulator == 'Gazebo':
+      self.process = subprocess.Popen(
+        [ "make", "HEADLESS=1", "px4_sitl", "gazebo"],
+        cwd=self.build_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True
+      )
+    elif self.simulator == 'JMavSim':
+      self.process = subprocess.Popen(
+        [ "make", "HEADLESS=1", "px4_sitl", "jmavsim"],
+        cwd=self.build_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True
+      )
+    else:
+      print("The simulator " + self.simulator + "is not yet implemented.")
+      exit()
     self.stop_thread = threading.Event()
     # self.thread = threading.Thread(target=self.process_output)
     # self.thread.start()
@@ -193,7 +206,7 @@ class Tester:
       mission = subprocess.run(missionCommand,
                               cwd=self.config['test_directory'],
                               timeout=160)
-                              
+
       if(mission.returncode > 0):
         return 1
       else:
