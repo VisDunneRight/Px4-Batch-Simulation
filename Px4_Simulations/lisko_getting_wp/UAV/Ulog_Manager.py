@@ -50,10 +50,22 @@ class UAV_Manager:
             #  os.sys.exit(1)
         return True
 
+    def delete_ulog_file(ulog_id: str, folder_loc: str = constants.DEFAULT_DOWNLOAD) -> bool:
+        if os.path.isdir(folder_loc):
+            abs_path = os.path.join(
+                os.path.abspath(folder_loc), ulog_id + ".ulg")
+        if not os.path.isfile(abs_path):
+            print(f"Not a file - skipped {ulog_id}")
+            return False
+        print(f"Deleted: {ulog_id}.ulg")
+        os.remove(abs_path)
+        return True
 
 def main():
     u_id = "1ed4b56a-e975-4f14-99e2-d19d69df3120"
-    uav_manger = UAV_Manager.download_ulog(u_id)
+    UAV_Manager.download_ulog(u_id)
+    UAV_Manager.delete_ulog_file(u_id)
+
 
 
 if __name__ == "__main__":
