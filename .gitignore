@@ -3,3 +3,4 @@ venv
 .DS_store
 .vscode/
 px4Developer/*
+Px4_Simulations/lisko_getting_wp/150-400_Coords.json
