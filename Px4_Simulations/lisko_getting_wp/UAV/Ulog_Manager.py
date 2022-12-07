@@ -1,4 +1,5 @@
-import constants
+from . import constants
+# import constants
 import glob
 import requests
 import os
@@ -61,10 +62,20 @@ class UAV_Manager:
         os.remove(abs_path)
         return True
 
+    def make_dir(path: str) -> None:
+        """_summary_
+        Makes directory 
+        Args:
+            path (str): directory path
+        """
+
+        if not os.path.isdir(path):
+            os.mkdir(path)
+
 def main():
     u_id = "1ed4b56a-e975-4f14-99e2-d19d69df3120"
     UAV_Manager.download_ulog(u_id)
-    UAV_Manager.delete_ulog_file(u_id)
+    # UAV_Manager.delete_ulog_file(u_id)
 
 
 
