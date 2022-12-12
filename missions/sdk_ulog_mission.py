@@ -1,12 +1,19 @@
 import asyncio
 from mavsdk.mission import MissionItem, MissionPlan
-from .missionHelperSDK import Mission
+from missionHelperSDK import Mission
 import json
 import argparse
 # from utils.ULogHelper import *
 
 
 async def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mission_path", type=str,
+                        help="the path to the flight plan")
+
+    args = parser.parse_args()
+
     missionAlt = 10
     missionSpd = 10
     mission = Mission()
@@ -14,6 +21,9 @@ async def main():
     print("Connecting to vehicle")
     await mission.connectVehicle()
 
+    # To show mission progress
+    t_progress = asyncio.create_task(mission.printMissionProgress())
+    print(args.mission_path)
     # keeps script running if drone in air
     termination_task = asyncio.ensure_future(mission.droneInAir())
 
@@ -24,7 +34,7 @@ async def main():
     mission_items = []
 
     # Load x and y coordinates from ulg file.
-    with open("/Users/daniellisko/GitRepos/Px4_Log_Analysis/saved_waypoints/clover/5e9e00ef-d5aa-4d99-af60-b8b45ab2f1f8.json", "r", encoding="utf-8") as input_data:
+    with open(args.mission_path, "r", encoding="utf-8") as input_data:
         uav_data = json.load(input_data)
 
     # for key  in coords_data:
@@ -42,7 +52,7 @@ async def main():
         if missionSpd < 0.5:
             continue
 
-        print(f"x:{x} | y:{y} --> speed: {missionSpd}")
+        # print(f"x:{x} | y:{y} --> speed: {missionSpd}")
 
         mission_items.append(MissionItem(wp[0],
                                          wp[1],
@@ -71,6 +81,7 @@ async def main():
     print("-- Starting mission")
     await mission.startMission()
 
+    t_progress.cancel()
     await termination_task
     print("--Finishing mission")
 

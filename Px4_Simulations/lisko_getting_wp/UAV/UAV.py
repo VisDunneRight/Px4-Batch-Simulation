@@ -1,8 +1,8 @@
 
 import json
 from pyulog.core import ULog
-# import constants
-from . import constants
+import constants
+# from . import constants
 from collections import OrderedDict
 import os
 import numpy as np

@@ -4,3 +4,5 @@ venv
 .vscode/
 px4Developer/*
 Px4_Simulations/lisko_getting_wp/150-400_Coords.json
+*.ulg
+Px4_Simulations/simulation_analysis/sim_ulogs
