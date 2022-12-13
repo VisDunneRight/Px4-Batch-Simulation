@@ -22,8 +22,9 @@ async def main():
     await mission.connectVehicle()
 
     # To show mission progress
-    t_progress = asyncio.create_task(mission.printMissionProgress())
-    print(args.mission_path)
+    # t_progress = asyncio.create_task(mission.printMissionProgress())
+    # print(args.mission_path)
+
     # keeps script running if drone in air
     termination_task = asyncio.ensure_future(mission.droneInAir())
 
@@ -81,7 +82,6 @@ async def main():
     print("-- Starting mission")
     await mission.startMission()
 
-    t_progress.cancel()
     await termination_task
     print("--Finishing mission")
 
