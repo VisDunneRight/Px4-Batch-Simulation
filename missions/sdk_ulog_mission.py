@@ -1,6 +1,6 @@
 import asyncio
 from mavsdk.mission import MissionItem, MissionPlan
-from missionHelperSDK import Mission
+from .missionHelperSDK import Mission
 import json
 import argparse
 # from utils.ULogHelper import *

@@ -4,6 +4,7 @@ import asyncio
 from mavsdk import System
 from mavsdk.mission import (MissionItem, MissionPlan)
 
+
 from pymavlink import mavutil
 import time
 import sys
@@ -49,15 +50,15 @@ class Mission:
         self.getArguements()
         self.connectVehicle()
 
-    async def arm(self):
-        await self.vehicle.action.arm()
+      async def arm(self):
+            await self.vehicle.action.arm()
 
-    async def startMission(self):
-        # for i in range(4):
-        # try:
+      async def startMission(self):
+            # for i in range(4):
+          # try:
         await self.vehicle.mission.start_mission()
         # return
-        # except:
+          # except:
         # pass
         # print("Mission didn't start. ending mission")
         # await asyncio.get_event_loop().shutdown_asyncgens()
@@ -71,47 +72,97 @@ class Mission:
                 print("-- Global position estimate OK")
                 break
 
-    def getOffsetFromLocationMeters(self, oriLat, oriLon, dNorth, dEast):
-        earth_radius = 6378137.0    # Radius of "spherical" earth
-        # Coordinate offsets in radians
-        dLat = dNorth/earth_radius
-        dLon = dEast/(earth_radius * math.cos(math.pi * oriLat/180))
+      def getOffsetFromLocationMeters(self, oriLat, oriLon, dNorth, dEast):
+            earth_radius = 6378137.0    # Radius of "spherical" earth
+            # Coordinate offsets in radians
+            dLat = dNorth/earth_radius
+            dLon = dEast/(earth_radius * math.cos(math.pi * oriLat/180))
 
-        # New position in decimal degrees
-        newlat = oriLat + (dLat * 180/math.pi)
-        newlon = oriLon + (dLon * 180/math.pi)
-        return newlat, newlon
+            #  New position in decimal degrees
+            newlat = oriLat + (dLat * 180/math.pi)
+            newlon = oriLon + (dLon * 180/math.pi)
+            return newlat, newlon
 
-    async def printMissionProgress(self):
-        async for mission_progress in self.vehicle.mission.mission_progress():
-            print(f"Mission progress: "
-                  f"{mission_progress.current}/"
-                  f"{mission_progress.total}")
+      async def printMissionProgress(self):
+            async for mission_progress in self.vehicle.mission.mission_progress():
+                print(f"Mission progress: "
+                      f"{mission_progress.current}/"
+                      f"{mission_progress.total}")
 
-    async def droneInAir(self):
-        """ Monitors whether the drone is flying or not and
-        returns after landing """
+      async def droneInAir(self):
+            """ Monitors whether the drone is flying or not and
+            returns after landing """
 
-        wasInAir = False
-        async for isInAir in self.vehicle.telemetry.in_air():
-            if isInAir:
-                wasInAir = isInAir
-            if wasInAir and not isInAir:
-                # for task in self.runningTask:
-                #   task.cancel()
-                #   try:
-                #     await task
-                #   except asyncio.CancelledError:
-                #     pass
-                await asyncio.get_event_loop().shutdown_asyncgens()
+            wasInAir = False
+            async for isInAir in self.vehicle.telemetry.in_air():
+                if isInAir:
+                    wasInAir = isInAir
+                if wasInAir and not isInAir:
+                    # for task in self.runningTask:
+                    #   task.cancel()
+                    #   try:
+                    #     await task
+                    #   except asyncio.CancelledError:
+                    #     pass
+                    await asyncio.get_event_loop().shutdown_asyncgens()
+    
                 return
 
-    async def getHomeLatLon(self):
-        async for position in self.vehicle.telemetry.position():
-            home_lat = position.latitude_deg
-            home_lon = position.longitude_deg
-            break
-        return home_lat, home_lon
+      async def getHomeLatLon(self):
+            async for position in self.vehicle.telemetry.position():
+                  home_lat = position.latitude_deg
+                  home_lon = position.longitude_deg
+                  break
+            return home_lat, home_lon
+
+    ############### Download Ulogs #########################
+
+    # async def download_log(self, drone, entry):
+    #     date_without_colon = entry.date.replace(":", "-")
+    #     filename = f"./log-{date_without_colon}.ulog"
+    #     print(f"Downloading: log {entry.id} from {entry.date} to {filename}")
+    #     previous_progress = -1
+
+    #     async for progress in drone.log_files.download_log_file(entry, filename):
+    #         new_progress = round(progress.progress*100)
+    #         if new_progress != previous_progress:
+    #             sys.stdout.write(f"\r{new_progress} %")
+    #             sys.stdout.flush()
+    #             previous_progress = new_progress
+    #     print()
+
+    # async def get_entries(self, drone):
+    #     entries = await drone.log_files.get_entries()
+    #     for entry in entries:
+    #         print(f"Log {entry.id} from {entry.date}")
+    #     return entries
+
+    async def download_logs(self):
+        total_fails = 0
+        entries = await self.vehicle.log_files.get_entries()
+        for entry in entries:
+            date_without_colon = entry.date.replace(":", "-")
+            filename = f"~/Desktop/log-{date_without_colon}.ulog"
+            print(
+                f"Downloading: log {entry.id} from {entry.date} to {filename}")
+
+            try:
+                previous_progress = await self.vehicle.log_files.download_log_file(entry=entry, path=filename)
+                print(previous_progress)
+                # for progress in await previous_progress:
+                #     print(previous_progress)
+                #     new_progress = round(progress.progress*100)
+                # if new_progress != previous_progress:
+                sys.stdout.write(f"\r{previous_progress} %")
+                sys.stdout.flush()
+            except:
+                total_fails += 1
+                print(f"Total Failed Ulogs {total_fails}")
+                # previous_progress = new_progress
+                # print()
+        print("Clearing Log Files")
+        await self.vehicle.log_files.erase_all_log_files()
+     #####################################################
 
 
 # https://docs.px4.io/v1.9.0/en/flight_modes/ for other types of missions
