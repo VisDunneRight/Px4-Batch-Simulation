@@ -34,7 +34,7 @@ class UAV:
             file_name = f"{self.ulog_id}.ulg"
             return ULog(os.path.join(abs_path, file_name)).data_list
         except:
-            raise (f"NO .ulg for {self.ulog_id }")
+            raise f"NO .ulg for {self.ulog_id }"
 
     def get_data_dict(self):
 
@@ -114,7 +114,7 @@ class UAV:
 
         for i, curr_i in enumerate(indices):
 
-            if prev_i >= curr_i:
+            if curr_i >= prev_i:
                 avg_val = np.median(data[prev_i:])
 
             else:
