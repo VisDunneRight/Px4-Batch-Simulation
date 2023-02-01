@@ -10,16 +10,24 @@ async def main():
   
   print("Connecting to vehicle")
   await mission.connectVehicle()
-  
-  termination_task = asyncio.ensure_future(mission.droneInAir()) # keeps script running if drone in air
-
   homeLat, homeLon = await mission.getHomeLatLon()
   print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
+  
+  # Task to run in parallel
+  print_mission_progress_task = asyncio.ensure_future( mission.printMissionProgress())
+  print_status_task = asyncio.ensure_future(mission.printStatus())
+  print_progress_task = asyncio.ensure_future(mission.printMissionProgress())
+  
+  # List of tasks
+  running_tasks = [print_mission_progress_task, print_status_task, print_progress_task]
+  
+  # All assigned tasks will terminated 
+  termination_task = asyncio.ensure_future(mission.droneInAir(running_tasks)) # keeps script running if drone in air
   await mission.vehicle.mission.clear_mission()
 
   mission_items = []
-  # Takeoff
 
+  # Takeoff
   radius = 10 #radius of the circle in meters
   steps = 10 # number points around the circle
   # takeoff to 10 meters  

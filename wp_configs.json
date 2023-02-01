@@ -6,43 +6,6 @@
       "name": "Mission 1:  circle",
       "excutable": "sdk_ulog_mission.py",
       "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/circle/19925825-9e32-46fc-bdd8-903bd278ec1f.json"
-    },
-    {
-      "name": "Mission 2:  kaleidoscope",
-      "excutable": "sdk_ulog_mission.py",
-      "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/kaleidoscope/6fb0fc79-df3d-41d3-9e44-f70f2dea05c4.json"
-    },
-    {
-      "name": "Mission 3:  clover",
-      "excutable": "sdk_ulog_mission.py",
-      "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/clover/e61ebe10-9609-402b-8f3f-2871f312503e.json"
-    },
-    {
-      "name": "Mission 4:  square",
-      "excutable": "sdk_ulog_mission.py",
-      "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/square/70423658-2f10-45df-a818-51a2f193b20d.json"
-    },
-
-    {
-      "name": "Mission 5:  rectangle",
-      "excutable": "sdk_ulog_mission.py",
-      "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/rectangle/2b085d8b-2228-4001-b1f7-8f526d3b8344.json"
-    },
-    {
-      "name": "Mission 6:  figure8",
-      "excutable": "sdk_ulog_mission.py",
-      "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/figure8/c6af51de-4f27-444a-9795-9ada52869326.json"
-    },
-
-    {
-      "name": "Mission 7:  survey",
-      "excutable": "sdk_ulog_mission.py",
-      "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/survey/fe77059f-b952-450a-a3a3-69a5382dd5e7.json"
-    },
-    {
-      "name": "Mission 8:  spiral_2",
-      "excutable": "sdk_ulog_mission.py",
-      "command": "/Users/daniellisko/GitRepos/Px4-Batch-Simulation/Px4_Simulations/lisko_getting_wp/saved_waypoints/waypoints/spiral_2/f68d4c90-a395-481a-938f-9fdf3aa16a0f.json"
     }
   ]
 }

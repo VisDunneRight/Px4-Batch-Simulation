@@ -1,6 +1,6 @@
 import asyncio
 from mavsdk.mission import MissionItem, MissionPlan
-from .missionHelperSDK import Mission
+from missionHelperSDK import Mission
 import json
 import argparse
 # from utils.ULogHelper import *
@@ -45,7 +45,7 @@ async def main():
     alt = wp_data["wp_altitude_m"]
     s = wp_data["wp_speed_ms"]
     yaw = wp_data["wp_yaw_deg"]
-    i = 0
+
     for x, y, missionAlt, missionSpd, m_yaw in zip(x_coord, y_coord, alt, s, yaw):
         wp = mission.getOffsetFromLocationMeters(
             homeLat, homeLon, dNorth=y, dEast=x)
@@ -53,7 +53,7 @@ async def main():
         if missionSpd < 0.5:
             continue
 
-        # print(f"x:{x} | y:{y} --> speed: {missionSpd}")
+        print(f"x:{x} | y:{y} --> speed: {missionSpd}")
 
         mission_items.append(MissionItem(wp[0],
                                          wp[1],
