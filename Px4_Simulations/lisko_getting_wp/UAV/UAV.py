@@ -2,6 +2,7 @@
 import json
 from pyulog.core import ULog
 import constants
+# from . import constants
 from collections import OrderedDict
 import os
 import numpy as np
@@ -118,6 +119,9 @@ class UAV:
 
             else:
                 # Get last median value range.
+                # print(prev_i, curr_i)
+                if len(data[prev_i:curr_i]) <= 0:
+                    continue
                 avg_val = max(data[prev_i:curr_i])
 
             prev_i = curr_i
@@ -254,17 +258,28 @@ class UAV:
         }
 
         if include_local and self.local_coords:
-            tmp_dict["local"] = self.local_coords
+            tmp_dict["local"] = {
+                "local_coords": self.local_coords,
+                "uav_status": self.modes_nearest_indices("vehicle_local_position")
+            }
 
         return tmp_dict
 
     def generate_json_file(self, directory: str, include_local: bool = False) -> None:
         if not os.path.isdir(directory):
             os.mkdir(directory)
+
         save_path = os.path.join(directory, f"{self.ulog_id}.json")
         tmp_dict = self.create_data_dict(include_local=include_local)
         with open(save_path, "w") as outfile:
             json.dump(tmp_dict, outfile)
+
+    def set_all_data(self):
+        self.set_wp_coords()
+        self.set_wp_altitudes()
+        self.set_wp_velocities()
+        self.set_yaw()
+        self.set_local_coords()
 
 
 ################# Helper Methods #####################################
@@ -304,27 +319,31 @@ def main():
     mUAV.set_yaw()
     mUAV.set_local_coords()
 
-    modes = mUAV.modes_nearest_indices("vehicle_local_position")
+    # out_dict = mUAV.create_data_dict(True)
 
-    i = 0
-    tmp_dict = []
-    local = mUAV.local_coords
-    for mode in modes:
-        tmp_dict.append({"mode": mode, "x": local["x"][i], "y": local["y"][i]})
-        i += 1
+    # print(out_dict['local'])
 
-    df = pd.DataFrame.from_dict(tmp_dict)
+    # modes = mUAV.modes_nearest_indices("vehicle_local_position")
 
-    grps = np.unique(modes)
-    for mode in grps:
-        tmp = df[df["mode"] == mode]
-        plt.plot(tmp["y"], tmp["x"])
+    # i = 0
+    # tmp_dict = []
+    # local = mUAV.local_coords
+    # for mode in modes:
+    #     tmp_dict.append({"mode": mode, "x": local["x"][i], "y": local["y"][i]})
+    #     i += 1
 
-    plt.scatter(mUAV.waypoints["lon"], mUAV.waypoints["lat"])
+    # df = pd.DataFrame.from_dict(tmp_dict)
 
-    plt.show()
+    # grps = np.unique(modes)
+    # for mode in grps:
+    #     tmp = df[df["mode"] == mode]
+    #     plt.plot(tmp["y"], tmp["x"])
 
-    mUAV.generate_json_file("./saved_waypoints")
+    # plt.scatter(mUAV.waypoints["lon"], mUAV.waypoints["lat"])
+
+    # plt.show()
+
+    # mUAV.generate_json_file("./saved_waypoints")
 
 
 if __name__ == '__main__':
