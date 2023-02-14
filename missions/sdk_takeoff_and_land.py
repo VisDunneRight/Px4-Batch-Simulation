@@ -1,6 +1,7 @@
 import asyncio
 from mavsdk.mission import MissionItem, MissionPlan
 from missionHelperSDK import Mission
+import sys
 
 
 async def main():

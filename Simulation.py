@@ -198,6 +198,7 @@ class Tester:
                 stderr=subprocess.STDOUT,
                 universal_newlines=True
             )
+
         else:
             print("The simulator " + self.simulator + "is not yet implemented.")
             exit()

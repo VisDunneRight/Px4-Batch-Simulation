@@ -20,7 +20,7 @@ RUN pip3 install -r "${WORKSPACE_DIR}/requirements.txt"
 # # Install ubuntu libraries
 RUN apt-get update && apt-get install -y lsb-release && apt-get clean all
 RUN apt-get -y install sudo
-RUN apt-get install wget -y
+RUN apt-get install wget -yc
 RUN apt install gnupg -y && sudo apt -y install gnupg1
 RUN apt-get -y install git
 
