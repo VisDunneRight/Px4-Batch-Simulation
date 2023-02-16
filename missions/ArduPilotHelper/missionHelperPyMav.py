@@ -1,6 +1,7 @@
+from constants import FlightMode, MessagingType
 from pymavlink import mavutil
-from time import sleep
 import math
+from time import sleep
 
 
 class Mission:
@@ -18,7 +19,7 @@ class Mission:
         print(
             f"Heartbeat from system (system: {self.vehicle.target_system}, component: {self.vehicle.target_component})")
 
-        print(self.get_message().to_dict())
+        print(self.get_message())
 
     def arm(self):
         target_system = self.vehicle.target_system
@@ -34,25 +35,24 @@ class Mission:
         print('Armed!')
 
     def disarm(self):
-        target_system = self.vehicle.target_system
-        target_component = self.vehicle.target_component
-        cmd = mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM
-        confirmation = 0
 
         self.vehicle.mav.command_long_send(
-            target_system, target_component, cmd, confirmation, 0, 0, 0, 0, 0, 0, 0)
+            self.vehicle.target_system,
+            self.vehicle.target_component,
+            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0,
+            0, 0, 0, 0, 0, 0, 0)
 
         print("Disarm command", self.get_message("COMMAND_ACK"), sep="\n")
 
     def take_off(self):
 
-        target_system = self.vehicle.target_system
-        target_component = self.vehicle.target_component
-        cmd = mavutil.mavlink.MAV_CMD_NAV_TAKEOFF
-        confirmation = 0
-
         self.vehicle.mav.command_long_send(
-            target_system, target_component, cmd, confirmation, math.nan, 0, 0, 0, 0, 0, 10)
+            self.vehicle.target_system,
+            self.vehicle.target_component,
+            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+            0,
+            0, 0, 0, math.nan, 0, 0, 10
+        )
 
         msg = self.get_message("COMMAND_ACK").to_dict()
         print("Takeoff command", msg, sep="\n")
@@ -61,10 +61,10 @@ class Mission:
         n = len(mission_items)
         print("Sending", n, "mission items")
 
-        self.vehicle.mav.mission_count(
+        self.vehicle.mav.mission_count_send(
             self.vehicle.target_system, self.vehicle.target_component, n, 0)
-        print(self.get_message("COUNT_ACK"), sep="\n")
 
+        print(self.get_message(MessagingType.MISSION_REQUEST), sep="\n")
         for waypoint in mission_items:
             self.vehicle.mav.mission_item_send(
                 self.vehicle.target_system,
@@ -76,8 +76,60 @@ class Mission:
                 waypoint.auto_continue,  # Auto continue
                 waypoint.hold_time,
                 waypoint.accepted_radius,
+                waypoint.mission_type,
+                waypoint.yaw,
+                waypoint.x,
+                waypoint.y,
+                waypoint.z,
                 waypoint.mission_type
             )
+
+            if waypoint != mission_items[-1]:
+                msg = self.get_message(
+                    MessagingType.MISSION_REQUEST)
+                print(msg)
+
+        upload_results = self.get_message(MessagingType.MISSION_ACK).to_dict()
+
+        if upload_results["type"] == 0:
+            print("Mission upload successful")
+        else:
+            print("Mission upload failed")
+            # TODO:handle mission upload failure
+
+    def start_mission(self):
+        self.vehicle.mav.command_long_send(
+            self.vehicle.target_system,
+            self.vehicle.target_component,
+            mavutil.mavlink.MAV_CMD_MISSION_START,
+            0, 0, 0, 0, 0, 0, 0, 0
+        )
+
+        print(self.get_message(MessagingType.MISSION_ACK), sep="\n")
+
+    def change_flight_mode(self, flight_mode: FlightMode) -> None:
+
+        print(f"Changing flight mode")
+        self.vehicle.mav.command_long_send(
+            self.vehicle.target_system,
+            self.vehicle.target_component,
+            mavutil.mavlink.MAV_CMD_DO_SET_MODE,
+            0, flight_mode, 0, 0, 0, 0, 0, 0
+        )
+
+        msg = self.get_message("COMMAND_ACK")
+        print(msg)
+
+    def set_home(self, latitude, longitude, alt) -> None:
+        print("Setting home")
+        self.vehicle.mav.command_long_send(
+            self.vehicle.target_system,
+            self.vehicle.target_component,
+            mavutil.mavlink.MAV_CMD_DO_SET_HOME,
+            0,
+            0, 0, 0, 0, math.nan, latitude, longitude, alt)
+
+        print(self.get_message("COMMAND_ACK"), sep="\n")
 
     def return_home(self):
         pass
@@ -87,10 +139,6 @@ class Mission:
             return self.vehicle.recv_match(type=keyword, blocking=True)
 
         return self.vehicle.recv_match(blocking=True)
-
-    def print_status(self):
-        while True:
-            print(self.get_message("GLOBAL_POSITION_INT").to_dict())
 
 
 class MissionItem:
@@ -120,14 +168,17 @@ if __name__ == "__main__":
     mission = Mission()
     mission.connect()
     print("Connected to Vehicle")
-    mission.arm()
 
-    mission.upload_mission([
-        MissionItem(1, 0, 0, 0, 0),
-        MissionItem(2, 0, 0, 0, 0),
-        MissionItem(3, 0, 0, 0, 0),
-        MissionItem(4, 0, 0, 0, 0)]
+    mission.set_home(40.0, -100.0, 0.0)
+
+    mission.upload_mission(
+        [
+            MissionItem(0, 0, 0, 0, 0),
+            MissionItem(1, 0, 0, 0, 0),
+            MissionItem(2, 0, 0, 0, 0),
+            MissionItem(3, 0, 0, 0, 0)
+        ]
     )
-
-    # print("Taking off")
-    # mission.take_off()
+    mission.change_flight_mode(FlightMode.AUTO)
+    mission.arm()
+    mission.take_off()

@@ -3,7 +3,9 @@ import os
 from time import sleep
 import psutil
 import signal
+import sys
 
+sys.path.append(os.path.dirname(os.path.dirname("./missions/ArduPilotHelper")))
 
 COPTER_DIR = "/ardupilot/Firmware/ArduCopter"
 # RUN_SIM_CMD = ["sim_vehicle.py", "-N", "-f", "gazebo-iris"]
@@ -26,7 +28,7 @@ if __name__ == "__main__":
         #     ["python3", "./missions/missionHelperPyMav.py"], check=True)
 
         mission_process = subprocess.run(
-            ["python3", "./missions/missionHelperPyMav.py"], check=True)
+            ["python3", "./missions/ArduPilotHelper/missionHelperPyMav.py"], check=True)
     except Exception as err:
         print(err)
 
