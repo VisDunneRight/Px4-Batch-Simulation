@@ -21,7 +21,7 @@ RUN apt install -y python3-pip
 
 RUN sudo apt install -y python3-lxml libxml2-utils
 RUN pip3 install pymavlink
-
+RUN pip3 install dronekit dronekit-sitl
 # Download REPO
 RUN cd /${USER_NAME} && git clone https://github.com/ArduPilot/ardupilot.git  ${FIRMWARE_DIR}
 RUN cd  /${USER_NAME}/${FIRMWARE_DIR} && git submodule update --init --recursive

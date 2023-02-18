@@ -49,7 +49,7 @@ class Mission:
     async def arm(self, tries=0):
 
         if tries >= 3:
-          return
+          print("Failed to arm drone")
 
         try:
             await self.vehicle.action.arm()
@@ -143,7 +143,8 @@ class Mission:
     # Methods for downloading log files
     async def download_log(self, entry):
         date_without_colon = entry.date.replace(":", "-")
-        filename = f"/root/log-{date_without_colon}.ulog"
+        # TODO: Allow for input of log file name
+        filename = f"/root/code/ulog_files/log-{date_without_colon}.ulog"
         print(f"Downloading: log {entry.id} from {entry.date} to{filename}")
         await self.vehicle.log_files.download_log_file(entry, filename)
         print()

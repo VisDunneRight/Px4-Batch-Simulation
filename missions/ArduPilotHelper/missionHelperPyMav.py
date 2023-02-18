@@ -2,6 +2,7 @@ from constants import FlightMode, MessagingType
 from pymavlink import mavutil
 import math
 from time import sleep
+import sys
 
 
 class Mission:
@@ -22,15 +23,20 @@ class Mission:
         print(self.get_message())
 
     def arm(self):
-        target_system = self.vehicle.target_system
-        target_component = self.vehicle.target_component
-        cmd = mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM
-        confirmation = 0
-        self.vehicle.mav.command_long_send(
-            target_system, target_component, cmd, confirmation, 1, 0, 0, 0, 0, 0, 0)
+        print("CHECKING FOR HEARTBEAT...")
+        self.vehicle.wait_heartbeat()
+        print("ARMING VEHICLE..")
+        self.vehicle.arducopter_arm()
+
+        # target_system = self.vehicle.target_system
+        # target_component = self.vehicle.target_component
+        # cmd = mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM
+        # confirmation = 0
+        # self.vehicle.mav.command_long_send(
+        #     target_system, target_component, cmd, confirmation, 1, 0, 0, 0, 0, 0, 0)
 
         print("Arm command", self.get_message("COMMAND_ACK"), sep="\n")
-        print("Waiting for the vehicle to arm")
+        print("Waiting for arming...")
         self.vehicle.motors_armed_wait()
         print('Armed!')
 
@@ -107,18 +113,23 @@ class Mission:
 
         print(self.get_message(MessagingType.MISSION_ACK), sep="\n")
 
-    def change_flight_mode(self, flight_mode: FlightMode) -> None:
+    def change_flight_mode(self, flight_mode: str) -> None:
+        if flight_mode not in self.vehicle.mode_mapping():
+            print("Unknown flight mode", flight_mode)
+            print("Try: ", self.vehicle.mode_mapping())
+            sys.exit(1)
 
-        print(f"Changing flight mode")
-        self.vehicle.mav.command_long_send(
-            self.vehicle.target_system,
-            self.vehicle.target_component,
-            mavutil.mavlink.MAV_CMD_DO_SET_MODE,
-            0, flight_mode, 0, 0, 0, 0, 0, 0
-        )
+        mode_id = self.vehicle.mode_mapping()[flight_mode]
+        self.vehicle.set_mode(mode_id)
 
-        msg = self.get_message("COMMAND_ACK")
-        print(msg)
+        while True:
+            ack_msg = self.get_message(MessagingType.COMMAND_ACK).to_dict()
+            if ack_msg['command'] != mavutil.mavlink.MAV_CMD_DO_SET_MODE:
+                sleep(0.5)
+                continue
+            print(
+                mavutil.mavlink.enums[MessagingType.MAV_RESULT][ack_msg['result']].description)
+            break
 
     def set_home(self, latitude, longitude, alt) -> None:
         print("Setting home")
@@ -169,8 +180,6 @@ if __name__ == "__main__":
     mission.connect()
     print("Connected to Vehicle")
 
-    mission.set_home(40.0, -100.0, 0.0)
-
     mission.upload_mission(
         [
             MissionItem(0, 0, 0, 0, 0),
@@ -179,6 +188,9 @@ if __name__ == "__main__":
             MissionItem(3, 0, 0, 0, 0)
         ]
     )
+
+    print("CHANGE FLIGHT MODE")
     mission.change_flight_mode(FlightMode.AUTO)
+    sleep(5)
     mission.arm()
     mission.take_off()

@@ -14,28 +14,30 @@ RUN_SIM_CMD = ["sim_vehicle.py", "-N", "-v", "ArduCopter"]
 RUN_GAZEBO = "gzserver"
 
 if __name__ == "__main__":
-    os.chdir(COPTER_DIR)
+    # os.chdir(COPTER_DIR)
+    # print("START SERVERS...")
+    # gz_process = subprocess.Popen(
+    #     [RUN_GAZEBO])
+    # ardu_process = subprocess.Popen(RUN_SIM_CMD, stdout=subprocess.DEVNULL)
 
-    print("START SERVERS...")
-    gz_process = subprocess.Popen(
-        [RUN_GAZEBO])
-    ardu_process = subprocess.Popen(RUN_SIM_CMD, stdout=subprocess.DEVNULL)
-    sleep(5)
+    # sleep(2)
 
     try:
+
         os.chdir("/ardupilot/code")
         # mission_process = subprocess.run(
         #     ["python3", "./missions/missionHelperPyMav.py"], check=True)
-
+        print("RUNNING SIMULATION...")
         mission_process = subprocess.run(
-            ["python3", "./missions/ArduPilotHelper/missionHelperPyMav.py"], check=True)
+            ["python3", "./missions/ArduPilotHelper/missionHelperPyMav_v2.py"], check=True)
+
     except Exception as err:
-        print(err)
+        print("ERROR", err)
 
-    ardu_process.kill()
-    ardu_process.wait()
-    processes = psutil.process_iter()
+    # ardu_process.kill()
+    # ardu_process.wait()
+    # processes = psutil.process_iter()
 
-    for process in processes:
-        if process.name() == "mavproxy.py" or process.name() == "arducopter":
-            os.kill(process.pid, signal.SIGKILL)
+    # for process in processes:
+    #     if process.name() == "mavproxy.py" or process.name() == "arducopter":
+    #         os.kill(process.pid, signal.SIGKILL)
