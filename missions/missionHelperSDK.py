@@ -6,6 +6,7 @@ from mavsdk.mission import (MissionItem, MissionPlan)
 import sys
 import argparse
 import math
+from time import sleep
 
 # https://github.com/PX4/PX4-Autopilot/blob/master/Tools/mavlink_px4.py
 
@@ -18,6 +19,7 @@ class Mission:
         self.cmds = None
         self.homePosSet = False
         self.runningTask = Any
+        self.ulog_filename = None
 
     # Get arguments and connect information
     def getArguements(self) -> Dict[str, Any]:
@@ -49,12 +51,14 @@ class Mission:
     async def arm(self, tries=0):
 
         if tries >= 3:
-          print("Failed to arm drone")
+            print("Failed to arm drone")
+            sys.exit(1)
 
         try:
             await self.vehicle.action.arm()
         except Exception as err:
             print(f"Error: {err}")
+            sleep(2)
             await self.arm(tries=tries + 1)
 
     async def disarm(self):
@@ -91,30 +95,39 @@ class Mission:
         return newlat, newlon
 
     async def printMissionProgress(self):
+
         prev_mission = -1
         async for mission_progress in self.vehicle.mission.mission_progress():
 
             if prev_mission == mission_progress.current:
-                sys.exit(0)
+                print("Mission Failed...")
+                print("exiting")
+                sys.exit(1)
+
+            prev_mission = mission_progress.current
             print(f"Mission progress: "
                   f"{mission_progress.current}/"
-                  f"{mission_progress.total}")
+                  f"{mission_progress.total}", end="\r")
             # await self.printPosition()
 
     async def droneInAir(self, running_tasks):
         """ Monitors whether the drone is flying or not and
         returns after landing """
 
+        print("Montitoring simulation started")
         wasInAir = False
         async for isInAir in self.vehicle.telemetry.in_air():
             if isInAir:
                 wasInAir = isInAir
 
             if wasInAir and not isInAir:
+                print("-- Disarming drone")
+                await self.disarm()
+
                 print("Downloading Log Entries")
                 log_entries = await self.get_entries()
-                for entry in log_entries:
-                    await self.download_log(entry=entry)
+                # for entry in log_entries:
+                await self.download_log(entry=log_entries[-1])
                 await self.vehicle.log_files.erase_all_log_files()
 
                 # TODO Might need to remove the following
@@ -142,12 +155,13 @@ class Mission:
 
     # Methods for downloading log files
     async def download_log(self, entry):
-        date_without_colon = entry.date.replace(":", "-")
+        if self.ulog_filename is None:
+            self.ulog_filename = entry.date.replace(":", "-")
         # TODO: Allow for input of log file name
-        filename = f"/root/code/ulog_files/log-{date_without_colon}.ulog"
+        filename = f"/root/code/sim_ulog_files/sim_{self.ulog_filename}.ulog"
         print(f"Downloading: log {entry.id} from {entry.date} to{filename}")
         await self.vehicle.log_files.download_log_file(entry, filename)
-        print()
+        print("Done...")
 
     async def get_entries(self):
         entries = await self.vehicle.log_files.get_entries()

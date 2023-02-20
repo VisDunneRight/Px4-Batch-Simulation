@@ -73,12 +73,29 @@ class Mission:
                               mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, 0, 0, 0, 10))
 
         # Define  MAV_CMD_NAV_WAYPOINT locations and add the commands
-        for mission in missions_array:
-            break
+
+        for mission_cmd in missions_array:
+            cmd = Command(0, 0, 0,
+                          mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                          mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          mission_cmd["x"],
+                          mission_cmd['y'],
+                          mission_cmd['altitude'])
+            self.mission_cmds.add(cmd)
 
     def get_home_location(self):
         uav_loc = self.vehicle.location.global_relative_frame
-        print("DRONE---->", uav_loc.lat, uav_loc.lon)
+        print("HOME Location:", "Lat:", uav_loc.lat, "Long:", uav_loc.lon)
+
+    def set_home_location(self, lat, lon):
+        # TODO Method for setting home location
+        pass
 
     def close_simulation(self):
         """Close the simulation"""

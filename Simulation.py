@@ -12,13 +12,13 @@ import threading
 import atexit
 from logger_helper import color, colorize
 from typing import Any, Dict, List, NoReturn, Optional, TextIO
+
 # import mavsdk.log_files as logs
 
 TIME_BETWEEN_RUNS = 10
 
 
 def main() -> NoReturn:
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--simulator", help="Simulation to use: Gazebo, JMavSim or AirSim",
                         default="Gazebo")
@@ -215,7 +215,7 @@ class Tester:
 
             mission = subprocess.run(missionCommand,
                                      cwd=self.config['test_directory'],
-                                     timeout=700)
+                                     timeout=1200)
 
             if (mission.returncode > 0):
                 return 1
