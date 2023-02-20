@@ -1,0 +1,166 @@
+{
+    "mavlink_connection": "",
+    "test_directory": "missions/",
+    "tests": [
+        {
+            "name": "Mission 1:  clover",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/clover_e0e3c709-2b8e-49ba-af38-3ceb3f7d3079.json"
+        },
+        {
+            "name": "Mission 2:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/square_f9191020-86b1-4e2a-bb64-db4b932d4cc2.json"
+        },
+        {
+            "name": "Mission 3:  paperplane",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/paperplane_9b3e611b-a80a-4918-b949-22faf6654e4a.json"
+        },
+        {
+            "name": "Mission 4:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey1_4bdb29cd-e746-43e6-bbfa-58ec63fb3d21.json"
+        },
+        {
+            "name": "Mission 5:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey2_7b3d3c6b-fb5e-45b1-b508-8c61f58ceed1.json"
+        },
+        {
+            "name": "Mission 6:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/circle_486a7835-22bf-434c-bfca-43dae28e74ad.json"
+        },
+        {
+            "name": "Mission 7:  clover",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/clover_5f7383db-e985-4817-b6d2-b43cf0ebf38f.json"
+        },
+        {
+            "name": "Mission 8:  clover",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/clover_a795c7f1-cbb9-4c3e-9b13-0a4f31e6407c.json"
+        },
+        {
+            "name": "Mission 9:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/kaleidoscope_c7e86b17-c6d1-46b7-b3ee-b74d6c719505.json"
+        },
+        {
+            "name": "Mission 10:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey2_03a4237b-52e2-4327-8bfd-0f6e4d6de940.json"
+        },
+        {
+            "name": "Mission 11:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/square_52bfbad3-f89f-4757-9b77-caeaa218c29b.json"
+        },
+        {
+            "name": "Mission 12:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/circle_bd0bd018-3c67-4b92-b1b1-665f1004b0c4.json"
+        },
+        {
+            "name": "Mission 13:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/circle_0bf79bef-9fc7-4309-b5db-767335cd5ece.json"
+        },
+        {
+            "name": "Mission 14:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/square_6b42521d-ad0b-4053-b825-44daecf1770a.json"
+        },
+        {
+            "name": "Mission 15:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/square_298ae216-074e-4d76-91a4-8b8c2402b39c.json"
+        },
+        {
+            "name": "Mission 16:  spiral",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/spiral_a2fb8f1c-3259-4cce-877a-d7ce400c67d2.json"
+        },
+        {
+            "name": "Mission 17:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey1_7de9c8e8-8f24-4d58-becd-8966a63d4310.json"
+        },
+        {
+            "name": "Mission 18:  paperplane",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/paperplane_b30ddfb7-e1ae-4ab2-b226-e37e56cdaa40.json"
+        },
+        {
+            "name": "Mission 19:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey1_47354cd8-c133-49de-ac7f-7f3772b87902.json"
+        },
+        {
+            "name": "Mission 20:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/circle_d41fb8af-1a7b-4b9b-a54b-a96768d9a780.json"
+        },
+        {
+            "name": "Mission 21:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/circle_ffcc3085-1b73-413f-babf-1498727c68fc.json"
+        },
+        {
+            "name": "Mission 22:  paperplane",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/paperplane_802735de-9598-43f5-8311-bf677290d965.json"
+        },
+        {
+            "name": "Mission 23:  paperplane",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/paperplane_83daeb2b-8c27-429e-a1af-47ff79be67c3.json"
+        },
+        {
+            "name": "Mission 24:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey2_fd79fdda-11e5-4b29-9b2f-bb19c451159b.json"
+        },
+        {
+            "name": "Mission 25:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/kaleidoscope_8238aa99-6bdc-4253-8462-c24e93911bdf.json"
+        },
+        {
+            "name": "Mission 26:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey1_2434e80a-c192-4261-8d48-bff972429653.json"
+        },
+        {
+            "name": "Mission 27:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey1_64d8e09f-c28e-4cd6-8b32-71418c03c4c0.json"
+        },
+        {
+            "name": "Mission 28:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/survey2_84da6392-3da2-4436-9ec0-6c03b9c8f3fe.json"
+        },
+        {
+            "name": "Mission 29:  spiral",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/spiral_4f921654-cdfe-48e6-804d-e8b343b73c12.json"
+        },
+        {
+            "name": "Mission 30:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/square_08cdcced-121c-417b-98dc-c62a34c227cb.json"
+        },
+        {
+            "name": "Mission 31:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/kaleidoscope_8c081b06-ed8f-44a0-bc46-f37bd395d104.json"
+        },
+        {
+            "name": "Mission 32:  spiral",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/code/saved_wp/spiral_1537e7a2-a86a-476e-80e5-1ef19d3cc8a0.json"
+        }
+    ]
+}

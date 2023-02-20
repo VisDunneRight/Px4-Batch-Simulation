@@ -1,52 +1,66 @@
 import asyncio
 from mavsdk.mission import MissionItem, MissionPlan
 from missionHelperSDK import Mission
+import sys
+
 
 async def main():
-  missionAlt = 10
-  missionSpd = 10
-  mission = Mission()
-  
-  print("Connecting to vehicle")
-  await mission.connectVehicle()
-  
-  termination_task = asyncio.ensure_future(mission.droneInAir()) # keeps script running if drone in air
+    missionAlt = 10
+    missionSpd = 10
+    mission = Mission()
 
-  homeLat, homeLon = await mission.getHomeLatLon()
-  print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
-  await mission.vehicle.mission.clear_mission()
+    print("Connecting to vehicle")
+    await mission.connectVehicle()
+    # Task to run in parallel
+    print_mission_progress_task = asyncio.ensure_future(
+        mission.printMissionProgress())
+    print_status_task = asyncio.ensure_future(mission.printConnectionStatus())
+    print_progress_task = asyncio.ensure_future(mission.printMissionProgress())
 
-  mission_items = []
-  # Takeoff
-  mission_items.append(MissionItem(homeLat,
-                                    homeLon,
-                                    missionAlt,
-                                    missionSpd,
-                                    is_fly_through=True,
-                                    gimbal_pitch_deg=0,
-                                    gimbal_yaw_deg=0,
-                                    camera_action=MissionItem.CameraAction.NONE,
-                                    loiter_time_s=float('nan'),
-                                    camera_photo_interval_s=float('nan'),
-                                    acceptance_radius_m=float('nan'),
-                                    yaw_deg=float('nan'),
-                                    camera_photo_distance_m=float('nan')))
+    # List of tasks
+    running_tasks = [print_mission_progress_task,
+                     print_status_task, print_progress_task]
+    termination_task = asyncio.ensure_future(mission.droneInAir(
+        running_tasks))  # keeps script running if drone in air
 
+    homeLat, homeLon = await mission.getHomeLatLon()
+    print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
+    await mission.vehicle.mission.clear_mission()
 
-  await mission.vehicle.mission.set_return_to_launch_after_mission(True)
+    mission_items = []
+    # Takeoff
+    mission_items.append(MissionItem(homeLat,
+                                     homeLon,
+                                     missionAlt,
+                                     missionSpd,
+                                     is_fly_through=True,
+                                     gimbal_pitch_deg=0,
+                                     gimbal_yaw_deg=0,
+                                     camera_action=MissionItem.CameraAction.NONE,
+                                     loiter_time_s=float('nan'),
+                                     camera_photo_interval_s=float('nan'),
+                                     acceptance_radius_m=float('nan'),
+                                     yaw_deg=float('nan'),
+                                     camera_photo_distance_m=float('nan')))
 
-  mission_plan = MissionPlan(mission_items)
-  print("-- Uploading mission")
-  await mission.uploadMission(mission_plan)
+    await mission.vehicle.mission.set_return_to_launch_after_mission(True)
 
-  print("-- Arming")
-  await mission.arm()
-  
-  print("-- Starting mission")
-  await mission.startMission()
+    mission_plan = MissionPlan(mission_items)
+    print("-- Uploading mission")
+    await mission.uploadMission(mission_plan)
 
-  await termination_task
-  print("-- Finishing mission")
+    #  Gives time for drone to get GPS fix before arming.
+    await asyncio.sleep(5)
+
+    print("-- Arming")
+    await mission.arm()
+
+    print("-- Starting mission")
+    await mission.startMission()
+
+    await termination_task
+    print("-- Finishing mission")
+
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
