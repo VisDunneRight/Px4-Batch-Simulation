@@ -3,13 +3,10 @@ from typing import Any, Dict, NoReturn
 import asyncio
 from mavsdk import System
 from mavsdk.mission import (MissionItem, MissionPlan)
-
-
-from pymavlink import mavutil
-import time
 import sys
 import argparse
 import math
+from time import sleep
 
 # https://github.com/PX4/PX4-Autopilot/blob/master/Tools/mavlink_px4.py
 
@@ -22,6 +19,7 @@ class Mission:
         self.cmds = None
         self.homePosSet = False
         self.runningTask = Any
+        self.ulog_filename = None
 
     # Get arguments and connect information
     def getArguements(self) -> Dict[str, Any]:
@@ -38,29 +36,42 @@ class Mission:
         await self.vehicle.connect(system_address=self.connection)
         async for state in self.vehicle.core.connection_state():
             if state.is_connected:
-                print("Drone discovered!")
+                print(f"Drone discovered")
                 break
-        # printMissionProgressTask = asyncio.ensure_future(
-            # self.printMissionProgress())
-        # self.runningTask = [printMissionProgressTask]
 
     # Meta function to reduce the number of calls needed
+    async def printConnectionStatus(self) -> None:
+        async for state in self.vehicle.core.connection_state():
+            print(state)
 
     async def setupVehicle(self) -> None:
         self.getArguements()
         self.connectVehicle()
 
-      async def arm(self):
-            await self.vehicle.action.arm()
+    async def arm(self, tries=0):
 
-      async def startMission(self):
-            # for i in range(4):
-          # try:
-        await self.vehicle.mission.start_mission()
+        if tries >= 3:
+            print("Failed to arm drone")
+            sys.exit(1)
+
+        try:
+            await self.vehicle.action.arm()
+        except Exception as err:
+            print(f"Error: {err}")
+            sleep(2)
+            await self.arm(tries=tries + 1)
+
+    async def disarm(self):
+        await self.vehicle.action.disarm()
+        await asyncio.sleep(5)
+
+    async def startMission(self):
+        # for i in range(4):
+        try:
+            await self.vehicle.mission.start_mission()
         # return
-          # except:
-        # pass
-        # print("Mission didn't start. ending mission")
+        except Exception as err:
+            print("Mission didn't start. ending mission")
         # await asyncio.get_event_loop().shutdown_asyncgens()
         # return
 
@@ -72,97 +83,91 @@ class Mission:
                 print("-- Global position estimate OK")
                 break
 
-      def getOffsetFromLocationMeters(self, oriLat, oriLon, dNorth, dEast):
-            earth_radius = 6378137.0    # Radius of "spherical" earth
-            # Coordinate offsets in radians
-            dLat = dNorth/earth_radius
-            dLon = dEast/(earth_radius * math.cos(math.pi * oriLat/180))
+    def getOffsetFromLocationMeters(self, oriLat, oriLon, dNorth, dEast):
+        earth_radius = 6378137.0    # Radius of "spherical" earth
+        # Coordinate offsets in radians
+        dLat = dNorth/earth_radius
+        dLon = dEast/(earth_radius * math.cos(math.pi * oriLat/180))
 
-            #  New position in decimal degrees
-            newlat = oriLat + (dLat * 180/math.pi)
-            newlon = oriLon + (dLon * 180/math.pi)
-            return newlat, newlon
+        # New position in decimal degrees
+        newlat = oriLat + (dLat * 180/math.pi)
+        newlon = oriLon + (dLon * 180/math.pi)
+        return newlat, newlon
 
-      async def printMissionProgress(self):
-            async for mission_progress in self.vehicle.mission.mission_progress():
-                print(f"Mission progress: "
-                      f"{mission_progress.current}/"
-                      f"{mission_progress.total}")
+    async def printMissionProgress(self):
 
-      async def droneInAir(self):
-            """ Monitors whether the drone is flying or not and
-            returns after landing """
+        prev_mission = -1
+        async for mission_progress in self.vehicle.mission.mission_progress():
 
-            wasInAir = False
-            async for isInAir in self.vehicle.telemetry.in_air():
-                if isInAir:
-                    wasInAir = isInAir
-                if wasInAir and not isInAir:
-                    # for task in self.runningTask:
-                    #   task.cancel()
-                    #   try:
-                    #     await task
-                    #   except asyncio.CancelledError:
-                    #     pass
-                    await asyncio.get_event_loop().shutdown_asyncgens()
-    
+            if prev_mission == mission_progress.current:
+                print("Mission Failed...")
+                print("exiting")
+                sys.exit(1)
+
+            prev_mission = mission_progress.current
+            print(f"Mission progress: "
+                  f"{mission_progress.current}/"
+                  f"{mission_progress.total}", end="\r")
+            # await self.printPosition()
+
+    async def droneInAir(self, running_tasks):
+        """ Monitors whether the drone is flying or not and
+        returns after landing """
+
+        print("Montitoring simulation started")
+        wasInAir = False
+        async for isInAir in self.vehicle.telemetry.in_air():
+            if isInAir:
+                wasInAir = isInAir
+
+            if wasInAir and not isInAir:
+                print("-- Disarming drone")
+                await self.disarm()
+
+                print("Downloading Log Entries")
+                log_entries = await self.get_entries()
+                # for entry in log_entries:
+                await self.download_log(entry=log_entries[-1])
+                await self.vehicle.log_files.erase_all_log_files()
+
+                # TODO Might need to remove the following
+                for task in running_tasks:
+                    task.cancel()
+                    try:
+                        await task
+                    except asyncio.CancelledError:
+                        pass
+                await asyncio.get_event_loop().shutdown_asyncgens()
                 return
 
-      async def getHomeLatLon(self):
-            async for position in self.vehicle.telemetry.position():
-                  home_lat = position.latitude_deg
-                  home_lon = position.longitude_deg
-                  break
-            return home_lat, home_lon
+    async def getHomeLatLon(self):
+        async for position in self.vehicle.telemetry.position():
+            home_lat = position.latitude_deg
+            home_lon = position.longitude_deg
+            break
+        return home_lat, home_lon
 
-    ############### Download Ulogs #########################
+    async def printStatus(self, verbose=False):
+        # TODO: remove this
+        if verbose:
+            async for status_text in self.vehicle.telemetry.status_text():
+                print(status_text)
 
-    # async def download_log(self, drone, entry):
-    #     date_without_colon = entry.date.replace(":", "-")
-    #     filename = f"./log-{date_without_colon}.ulog"
-    #     print(f"Downloading: log {entry.id} from {entry.date} to {filename}")
-    #     previous_progress = -1
+    # Methods for downloading log files
+    async def download_log(self, entry):
+        if self.ulog_filename is None:
+            self.ulog_filename = entry.date.replace(":", "-")
+        # TODO: Allow for input of log file name
+        filename = f"/root/code/sim_ulog_files/sim_{self.ulog_filename}.ulog"
+        print(f"Downloading: log {entry.id} from {entry.date} to{filename}")
+        await self.vehicle.log_files.download_log_file(entry, filename)
+        print("Done...")
 
-    #     async for progress in drone.log_files.download_log_file(entry, filename):
-    #         new_progress = round(progress.progress*100)
-    #         if new_progress != previous_progress:
-    #             sys.stdout.write(f"\r{new_progress} %")
-    #             sys.stdout.flush()
-    #             previous_progress = new_progress
-    #     print()
-
-    # async def get_entries(self, drone):
-    #     entries = await drone.log_files.get_entries()
-    #     for entry in entries:
-    #         print(f"Log {entry.id} from {entry.date}")
-    #     return entries
-
-    async def download_logs(self):
-        total_fails = 0
+    async def get_entries(self):
         entries = await self.vehicle.log_files.get_entries()
         for entry in entries:
-            date_without_colon = entry.date.replace(":", "-")
-            filename = f"~/Desktop/log-{date_without_colon}.ulog"
-            print(
-                f"Downloading: log {entry.id} from {entry.date} to {filename}")
-
-            try:
-                previous_progress = await self.vehicle.log_files.download_log_file(entry=entry, path=filename)
-                print(previous_progress)
-                # for progress in await previous_progress:
-                #     print(previous_progress)
-                #     new_progress = round(progress.progress*100)
-                # if new_progress != previous_progress:
-                sys.stdout.write(f"\r{previous_progress} %")
-                sys.stdout.flush()
-            except:
-                total_fails += 1
-                print(f"Total Failed Ulogs {total_fails}")
-                # previous_progress = new_progress
-                # print()
-        print("Clearing Log Files")
-        await self.vehicle.log_files.erase_all_log_files()
-     #####################################################
+            print(f"Log {entry.id} from {entry.date}")
+        return entries
 
 
 # https://docs.px4.io/v1.9.0/en/flight_modes/ for other types of missions
@@ -174,8 +179,8 @@ async def main() -> NoReturn:
     print("Connecting to vehicle")
     await mission.connectVehicle()
 
-    # keeps script running if drone in air
-    termination_task = asyncio.ensure_future(mission.droneInAir())
+    termination_task = asyncio.ensure_future(
+        mission.droneInAir())  # keeps script running if drone in air
 
     homeLat, homeLon = await mission.getHomeLatLon()
     print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
@@ -259,7 +264,6 @@ async def main() -> NoReturn:
 
     await termination_task
     print("-- Finishing mission")
-
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
