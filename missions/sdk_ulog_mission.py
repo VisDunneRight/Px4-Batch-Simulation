@@ -18,20 +18,17 @@ async def main():
 
     args = parser.parse_args()
 
-    
-
     missionAlt = 10
     missionSpd = 10
     mission = Mission()
 
-   
     await mission.connectVehicle()
-   
 
     # Task to run in parallel
     print_mission_progress_task = asyncio.ensure_future(
         mission.printMissionProgress())
-    print_status_task = asyncio.ensure_future(mission.printStatus())
+    print_status_task = asyncio.ensure_future(
+        mission.printStatus(verbose=False))
     print_progress_task = asyncio.ensure_future(mission.printMissionProgress())
 
     running_tasks = [print_mission_progress_task,
@@ -39,7 +36,7 @@ async def main():
 
     termination_task = asyncio.ensure_future(mission.droneInAir(
         running_tasks))  # keeps script running if drone in air
-    
+
     # to save files same as downloaded ulogs from Px4 server
     mission.ulog_filename = args.mission_path.split("/")[-1]
 
@@ -52,6 +49,7 @@ async def main():
     mission_items = []
 
     # Load x and y coordinates from ulg file.
+
     with open(args.mission_path, "r", encoding="utf-8") as input_data:
         uav_data = json.load(input_data)
 
@@ -65,6 +63,7 @@ async def main():
     # yaw = uav_data["wp_yaw_deg"]
 
     for x, y, missionAlt, missionSpd in zip(x_coord, y_coord, alt, s):
+
         wp = mission.getOffsetFromLocationMeters(
             homeLat, homeLon, dNorth=y, dEast=x)
 
@@ -99,7 +98,6 @@ async def main():
 
     print("-- Starting mission")
     await mission.startMission()
-
 
     await termination_task
     print("--Finishing mission")

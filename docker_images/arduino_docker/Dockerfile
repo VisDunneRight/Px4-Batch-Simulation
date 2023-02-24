@@ -20,7 +20,7 @@ RUN apt install -y python3
 RUN apt install -y python3-pip
 
 RUN sudo apt install -y python3-lxml libxml2-utils
-RUN pip3 install pymavlink
+RUN pip3 install pymavlink==2.4.8gas
 RUN pip3 install dronekit dronekit-sitl
 # Download REPO
 RUN cd /${USER_NAME} && git clone https://github.com/ArduPilot/ardupilot.git  ${FIRMWARE_DIR}
@@ -74,7 +74,7 @@ RUN cd /${USER_NAME} && git clone https://github.com/khancyr/ardupilot_gazebo \
 
 # Install Gazebo
 RUN sudo echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc
-RUN sudo echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/models' >> ~/.bashrc
+RUN sudo echo 'export GAZEBO_MODEL_PATH=/ardupilot/ardupilot_gazebo/models' >> ~/.bashrc
 RUN . ~/.bashrc
 
 

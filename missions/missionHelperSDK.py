@@ -157,8 +157,11 @@ class Mission:
     async def download_log(self, entry):
         if self.ulog_filename is None:
             self.ulog_filename = entry.date.replace(":", "-")
+        else:
+            self.ulog_filename = self.ulog_filename.rstrip(".json")
+
         # TODO: Allow for input of log file name
-        filename = f"/root/code/sim_ulog_files/sim_{self.ulog_filename}.ulog"
+        filename = f"/root/code/sim_ulog_files/sim_{self.ulog_filename}.ulg"
         print(f"Downloading: log {entry.id} from {entry.date} to{filename}")
         await self.vehicle.log_files.download_log_file(entry, filename)
         print("Done...")
