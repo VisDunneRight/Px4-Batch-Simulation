@@ -40,14 +40,13 @@ class Mission:
 
     def arm(self):
         """Arms the vehicle"""
-        print("Running basic prearm checks...")
-
         # Don't let the vehicle arm until autopilot is ready
         out_msg = "Waiting for vehicle to be armable."
         while not self.vehicle.is_armable:
             print(out_msg, end="\r")
             out_msg += "."
             time.sleep(1)
+
         print("Arming vehicle...")
         self.vehicle.mode = VehicleMode("GUIDED")
         self.vehicle.armed = True
@@ -57,6 +56,7 @@ class Mission:
             print(out_msg, end="\r")
             out_msg += "."
             time.sleep(1)
+        print("-----VEHICLE ARMED------")
 
     def takeoff(self, target_altitude=None):
         self.vehicle.simple_takeoff(target_altitude)
@@ -99,13 +99,13 @@ class Mission:
         home = self.vehicle.location.global_relative_frame
 
         # takeoff to 10 meters
-        wp = self.get_location_offset_meters(home, 0, 0, 10)
-        cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-                      mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
-        cmds.add(cmd)
+        # wp = self.get_location_offset_meters(home, 0, 0, 10)
+        # cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+        #               mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
+        # cmds.add(cmd)
 
         # move 10 meters north
-        wp = self.get_location_offset_meters(wp, 10, 0, 0)
+        wp = self.get_location_offset_meters(home, 10, 0, 0)
         cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
                       mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
         cmds.add(cmd)
@@ -140,12 +140,13 @@ class Mission:
     def track_position(self):
         """Starts the mission"""
        # monitor mission execution
+        self.vehicle.commands.next = 0
         nextwaypoint = self.vehicle.commands.next
         while nextwaypoint < len(self.vehicle.commands):
             if self.vehicle.commands.next > nextwaypoint:
-                display_seq = self.vehicle.commands.next+1
+                display_seq = self.vehicle.commands.next
                 print("Moving to waypoint %s" % display_seq)
-                nextwaypoint = self.armvehicle.commands.next
+                nextwaypoint = self.vehicle.commands.next
             time.sleep(1)
 
     def get_home_location(self):
@@ -183,15 +184,19 @@ if __name__ == "__main__":
     print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
 
     cmds = mission.load_mission()
-
+    sleep(2)
+    print("--Upload mission")
     cmds.upload()
     sleep(2)
     mission.arm()
+    mission.takeoff(10)
 
+    mission.vehicle.mode = VehicleMode("AUTO")
+    # monitor mission execution
     mission.track_position()
 
-    while mission.vehicle.commands.next > 0:
-        time.sleep(1)
-        print(mission.vehicle.commands.next)
+    # while mission.vehicle.commands.next > 0:
+    #     time.sleep(1)
+    #     print(mission.vehicle.commands.next)
 
     mission.close_simulation()
