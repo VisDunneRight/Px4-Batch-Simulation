@@ -89,52 +89,27 @@ class Mission:
         newlon = original_location.lon + (dLon * 180/math.pi)
         return LocationGlobal(newlat, newlon, original_location.alt + alt)
 
-    def load_mission(self):
+    def load_mission(self, uav_data):
         """Loads a mission"""
 
-        print("Generating mission commands...")
         cmds = self.vehicle.commands
         cmds.clear()
-
         home = self.vehicle.location.global_relative_frame
 
-        # takeoff to 10 meters
-        # wp = self.get_location_offset_meters(home, 0, 0, 10)
-        # cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-        #               mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
-        # cmds.add(cmd)
+        print("Generating mission commands...")
+        x_coord = uav_data["x"]
+        y_coord = uav_data["y"]
+        alt = uav_data["altitude"]
+        s = uav_data["velocity"]
 
-        # move 10 meters north
-        wp = self.get_location_offset_meters(home, 10, 0, 0)
-        cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-                      mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
-        cmds.add(cmd)
+        i = 0
+        for x, y, missionAlt, missionSpd in zip(x_coord, y_coord, alt, s):
 
-        # move 10 meters east
-        wp = self.get_location_offset_meters(wp, 0, 10, 0)
-        cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-                      mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
-        cmds.add(cmd)
+            wp = self.get_location_offset_meters(home, y, x, missionAlt)
+            cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                          mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
+            cmds.add(cmd)
 
-        # move 10 meters south
-        wp = self.get_location_offset_meters(wp, -10, 0, 0)
-        cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-                      mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
-        cmds.add(cmd)
-
-        # move 10 meters west
-        wp = self.get_location_offset_meters(wp, 0, -10, 0)
-        cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-                      mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
-        cmds.add(cmd)
-
-        # land
-        wp = self.get_location_offset_meters(home, 0, 0, 10)
-        cmd = Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-                      mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 1, 0, 0, 0, 0, wp.lat, wp.lon, wp.alt)
-        cmds.add(cmd)
-
-        print("uploading mission")
         return cmds
 
     def track_position(self):
@@ -175,15 +150,13 @@ if __name__ == "__main__":
     with open(args.mission_path, "r", encoding="utf-8") as input_data:
         uav_data = json.load(input_data)
 
-    x_coords, y_coords, altitudes, velocities = uav_data.values()
-
     mission = Mission()
     mission.connect()
 
     homeLat, homeLon = mission.get_home_location()
     print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
 
-    cmds = mission.load_mission()
+    cmds = mission.load_mission(uav_data)
     sleep(2)
     print("--Upload mission")
     cmds.upload()
