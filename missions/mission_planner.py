@@ -4,7 +4,6 @@ import os
 
 class Batch:
     """ Helper to generate a batch mission plan"""
-
     def __init__(self, py_script: str,  mavlink_connection: str = "", test_directory: str = "missions/") -> None:
 
         self. py_script = py_script = py_script.strip(

@@ -61,23 +61,44 @@ RUN export ARDUPILOT_ENTRYPOINT="/home/${USER_NAME}/ardupilot_entrypoint.sh" \
     && chmod +x $ARDUPILOT_ENTRYPOINT \
     && sudo mv $ARDUPILOT_ENTRYPOINT /ardupilot_entrypoint.sh
 
-####################### Install Gazebo ######################
-RUN sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' \
-    && wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - \
-    && sudo apt update
+# ####################### Install Gazebo ######################
+# RUN sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' \
+#     && wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - \
+#     && sudo apt update
 
-# RUN sudo apt install gazebo9 libgazebo9-dev
-RUN sudo apt-get install -y gazebo11 libgazebo11-dev
+# # RUN sudo apt install gazebo9 libgazebo9-dev
+# RUN sudo apt-get install -y gazebo11 libgazebo11-dev
 
-####################### Gazebo Plugin Installation ######################
-RUN cd /${USER_NAME} && git clone https://github.com/khancyr/ardupilot_gazebo \
-    && cd ardupilot_gazebo && mkdir build && cd build && cmake .. && make -j4
+# ####################### Gazebo Plugin Installation ######################
+# RUN cd /${USER_NAME} && git clone https://github.com/khancyr/ardupilot_gazebo \
+#     && cd ardupilot_gazebo && mkdir build && cd build && cmake .. && make -j4
+
+# # Install Gazebo
+# RUN sudo echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc
+# RUN sudo echo 'export GAZEBO_MODEL_PATH=/ardupilot/ardupilot_gazebo/models' >> ~/.bashrc
+# RUN . ~/.bashrc
+
+# Install SITL and MAVProxy
+RUN sudo pip3 install wheel future lxml
+RUN sudo pip3 install MAVProxy
+
+# Install wget
+RUN sudo apt-get update && sudo apt-get install -y wget
 
 # Install Gazebo
-RUN sudo echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc
-RUN sudo echo 'export GAZEBO_MODEL_PATH=/ardupilot/ardupilot_gazebo/models' >> ~/.bashrc
-RUN . ~/.bashrc
+RUN sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+RUN wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+RUN sudo apt-get update && sudo apt-get install -y gazebo11 libgazebo11-dev
+RUN echo "source /usr/share/gazebo-11/setup.sh" >> ~/.bashrc
 
+# Install ROS Noetic
+RUN sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN sudo apt-get update && sudo apt-get install -y ros-noetic-desktop-full
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN sudo apt-get install -y python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+RUN sudo rosdep init
+RUN rosdep update
 
 ####################### Clean Up ######################
 # Set the buildlogs directory into /tmp as other directory aren't accessible

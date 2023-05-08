@@ -1,15 +1,14 @@
-#!/usr/bin/env python3
-from typing import Any, Dict, NoReturn
+# !/usr/bin/env python3
 import asyncio
-from mavsdk import System
-from mavsdk.mission import (MissionItem, MissionPlan)
 import sys
 import argparse
 import math
+from typing import Any, Dict, NoReturn
+from mavsdk.mission import (MissionItem, MissionPlan)
 from time import sleep
+from mavsdk import System
 
 # https://github.com/PX4/PX4-Autopilot/blob/master/Tools/mavlink_px4.py
-
 
 class Mission:
     def __init__(self) -> None:
@@ -36,7 +35,7 @@ class Mission:
         await self.vehicle.connect(system_address=self.connection)
         async for state in self.vehicle.core.connection_state():
             if state.is_connected:
-                print(f"Drone discovered")
+                print("Drone discovered")
                 break
 
     # Meta function to reduce the number of calls needed
@@ -71,6 +70,7 @@ class Mission:
             await self.vehicle.mission.start_mission()
         # return
         except Exception as err:
+            print(err)
             print("Mission didn't start. ending mission")
         # await asyncio.get_event_loop().shutdown_asyncgens()
         # return
@@ -126,8 +126,8 @@ class Mission:
 
                 print("Downloading Log Entries")
                 log_entries = await self.get_entries()
-                # for entry in log_entries:
-                await self.download_log(entry=log_entries[-1])
+                for i, entry in enumerate(log_entries):
+                    await self.download_log(entry=entry, suffix=str(i))
                 await self.vehicle.log_files.erase_all_log_files()
 
                 # TODO Might need to remove the following
@@ -154,14 +154,15 @@ class Mission:
                 print(status_text)
 
     # Methods for downloading log files
-    async def download_log(self, entry):
+    async def download_log(self, entry, suffix=""):
         if self.ulog_filename is None:
             self.ulog_filename = entry.date.replace(":", "-")
         else:
             self.ulog_filename = self.ulog_filename.rstrip(".json")
 
         # TODO: Allow for input of log file name
-        filename = f"/root/code/sim_ulog_files/sim_{self.ulog_filename}.ulg"
+
+        filename = f"/root/data/sim_{suffix}_{self.ulog_filename}.ulg"
         print(f"Downloading: log {entry.id} from {entry.date} to{filename}")
         await self.vehicle.log_files.download_log_file(entry, filename)
         print("Done...")
@@ -182,8 +183,7 @@ async def main() -> NoReturn:
     print("Connecting to vehicle")
     await mission.connectVehicle()
 
-    termination_task = asyncio.ensure_future(
-        mission.droneInAir())  # keeps script running if drone in air
+    termination_task = asyncio.ensure_future(mission.droneInAir())  # keeps script running if drone in air
 
     homeLat, homeLon = await mission.getHomeLatLon()
     print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')

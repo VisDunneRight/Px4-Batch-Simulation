@@ -49,19 +49,17 @@ async def main():
     mission_items = []
 
     # Load x and y coordinates from ulg file.
-
+    print("Loading ulg file...")
     with open(args.mission_path, "r", encoding="utf-8") as input_data:
+        print("input_data")
         uav_data = json.load(input_data)
-
-    # for key  in coords_data:
-    # wp_data = uav_data["wp"]
 
     x_coord = uav_data["x"]
     y_coord = uav_data["y"]
     alt = uav_data["altitude"]
     s = uav_data["velocity"]
     # yaw = uav_data["wp_yaw_deg"]
-
+    print("--CREATING MISSION PLAN")
     for x, y, missionAlt, missionSpd in zip(x_coord, y_coord, alt, s):
 
         wp = mission.getOffsetFromLocationMeters(
@@ -70,6 +68,9 @@ async def main():
         if missionSpd < 0.5:
             continue
 
+        # TODO: Remove this line later
+        missionSpd = 5
+        print(x,y, missionAlt, missionSpd)
         mission_items.append(MissionItem(wp[0],
                                          wp[1],
                                          missionAlt,
@@ -90,11 +91,12 @@ async def main():
     mission_plan = MissionPlan(mission_items)
     print("-- Uploading mission")
     await mission.uploadMission(mission_plan)
-
+    
+    sleep(5)
     print("-- Arming")
     await mission.arm()
 
-    sleep(3)
+    sleep(5)
 
     print("-- Starting mission")
     await mission.startMission()
