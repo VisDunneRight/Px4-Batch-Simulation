@@ -15,7 +15,7 @@ from typing import Any, Dict, List, NoReturn, Optional, TextIO
 
 # import mavsdk.log_files as logs
 
-TIME_BETWEEN_RUNS = 10
+TIME_BETWEEN_RUNS = 5
 
 
 def main() -> NoReturn:
@@ -199,6 +199,9 @@ class Tester:
                 universal_newlines=True
             )
 
+        elif self.simulator == 'ArduPilot':
+            
+
         else:
             print("The simulator " + self.simulator + "is not yet implemented.")
             exit()
@@ -209,9 +212,13 @@ class Tester:
         time.sleep(TIME_BETWEEN_RUNS)
 
         try:
+            print(self.simulator)
             missionCommand = ["python3", test['excutable']]
+
             if "command" in test:
                 missionCommand.append(test['command'])
+                missionCommand.append(self.simulator)
+            print(missionCommand, test["command"])
 
             mission = subprocess.run(missionCommand,
                                      cwd=self.config['test_directory'],

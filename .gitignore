@@ -6,3 +6,4 @@ px4Developer/*
 px4Developer/Px4-Autopilot/
 Px4_Simulations/simulation_analysis/sim_ulogs
 *_Coords.json
+Px4_Log_Analysis/

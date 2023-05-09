@@ -1,0 +1,216 @@
+{
+    "mavlink_connection": "",
+    "test_directory": "missions/",
+    "tests": [
+        {
+            "name": "Mission 1:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey1_99713892-cdd9-4a10-b0b2-38de0ba320ed.json"
+        },
+        {
+            "name": "Mission 2:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey1_64211d64-f434-4a0c-a6cf-30c1017302bd.json"
+        },
+        {
+            "name": "Mission 3:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey1_781aecee-5b76-4840-8654-85a618c16c9c.json"
+        },
+        {
+            "name": "Mission 4:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey1_7de9c8e8-8f24-4d58-becd-8966a63d4310.json"
+        },
+        {
+            "name": "Mission 5:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey1_7e2f1eac-2eff-4f3e-b5c5-53ad85cec56f.json"
+        },
+        {
+            "name": "Mission 6:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/square_f9191020-86b1-4e2a-bb64-db4b932d4cc2.json"
+        },
+        {
+            "name": "Mission 7:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/square_1740e165-158c-41ec-ad3e-63f585062431.json"
+        },
+        {
+            "name": "Mission 8:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/square_c17d2f32-53a2-4db0-87ff-623ed752de3e.json"
+        },
+        {
+            "name": "Mission 9:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/square_52bfbad3-f89f-4757-9b77-caeaa218c29b.json"
+        },
+        {
+            "name": "Mission 10:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/square_4a976cf1-0770-467f-9590-fe36ac6f2234.json"
+        },
+        {
+            "name": "Mission 11:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/kaleidoscope_f0bccd64-6898-4f40-95a8-0edf70520e72.json"
+        },
+        {
+            "name": "Mission 12:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/kaleidoscope_4bf164f9-815b-4b1c-a0a8-542320d02de0.json"
+        },
+        {
+            "name": "Mission 13:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/kaleidoscope_87a5be3c-5b80-4055-bda8-0468b01eff9c.json"
+        },
+        {
+            "name": "Mission 14:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/kaleidoscope_ecb64e44-b997-4fe7-b59e-d14d64ee4ad3.json"
+        },
+        {
+            "name": "Mission 15:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/kaleidoscope_66525550-6621-47c4-8d15-14f664a6c9a0.json"
+        },
+        {
+            "name": "Mission 16:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/circle_18dabc8f-99b8-46e8-8380-a097d0073bcd.json"
+        },
+        {
+            "name": "Mission 17:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/circle_df13a9c6-f3f5-4078-b6b6-2baff2b533eb.json"
+        },
+        {
+            "name": "Mission 18:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/circle_c401e167-3c46-4df0-afd7-88ec8a2b926c.json"
+        },
+        {
+            "name": "Mission 19:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/circle_f1d59a9a-c357-4a3f-9155-84ceefb9c006.json"
+        },
+        {
+            "name": "Mission 20:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/circle_31dbd8f6-c149-4552-911e-24247a238625.json"
+        },
+        {
+            "name": "Mission 21:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey2_9c908247-778d-451b-9f34-759e40294468.json"
+        },
+        {
+            "name": "Mission 22:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey2_cd98915f-c3b8-4a7c-a98e-3987e5c22cb4.json"
+        },
+        {
+            "name": "Mission 23:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey2_16de6d30-1887-4566-aac4-9169163265c8.json"
+        },
+        {
+            "name": "Mission 24:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey2_ca84bbc6-6bbd-4e9b-91c7-4470d48a7e22.json"
+        },
+        {
+            "name": "Mission 25:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/survey2_8cd5c17d-521d-491a-9797-b871d9feaaf2.json"
+        },
+        {
+            "name": "Mission 26:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/hourglass_a2225720-4757-415d-81b1-cfb6c0eac039.json"
+        },
+        {
+            "name": "Mission 27:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/hourglass_67762352-f28e-4377-8873-f8a316ce8bb8.json"
+        },
+        {
+            "name": "Mission 28:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/hourglass_599a834e-e7f3-4659-99ff-e898f58854e4.json"
+        },
+        {
+            "name": "Mission 29:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/hourglass_8d46fdb3-c995-4fa4-bffa-20714380f0f1.json"
+        },
+        {
+            "name": "Mission 30:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/hourglass_43e8e59c-0b97-40e3-865f-0018ab23cce2.json"
+        },
+        {
+            "name": "Mission 31:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle_a1b89be5-9a4e-4f82-ab60-40bd184765ba.json"
+        },
+        {
+            "name": "Mission 32:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle_602aacb6-cf50-4ff5-8241-9047232ece6c.json"
+        },
+        {
+            "name": "Mission 33:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle_e1f99394-2732-47bc-ab53-c7f0f4308c36.json"
+        },
+        {
+            "name": "Mission 34:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle_423a3084-c8e2-41b8-aeb0-44d0b4addbca.json"
+        },
+        {
+            "name": "Mission 35:  rectangle2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle2_f1f80edb-3e2b-48c4-a8bb-e40131a7bed9.json"
+        },
+        {
+            "name": "Mission 36:  rectangle2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle2_3002cb95-c579-4824-9e64-33c98c63cdc2.json"
+        },
+        {
+            "name": "Mission 37:  rectangle2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle2_2c1b44e5-1fdd-42b5-8ffe-242a51699d59.json"
+        },
+        {
+            "name": "Mission 38:  rectangle2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle2_deb0692b-f381-4553-ae46-a309f1d4756c.json"
+        },
+        {
+            "name": "Mission 39:  rectangle2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/rectangle2_a3685216-c138-426c-a3cf-556529d71c8e.json"
+        },
+        {
+            "name": "Mission 40:  spiral",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/spiral_6dabc773-23d8-418e-8a9e-4be7229f0860.json"
+        },
+        {
+            "name": "Mission 41:  spiral",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/spiral_75919fb7-e457-40d2-96d0-e54c537cd2e5.json"
+        },
+        {
+            "name": "Mission 42:  spiral",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/saved_wps_Apr-19-2023/spiral_cb8a37ce-981f-4c19-a608-29caabd258dd.json"
+        }
+    ]
+}

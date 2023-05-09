@@ -1,0 +1,166 @@
+{
+    "mavlink_connection": "",
+    "test_directory": "missions/",
+    "tests": [
+        {
+            "name": "Mission 9:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/square_b51dbc99-4a7e-4314-8fda-64ebdb451c95.json"
+        },
+        {
+            "name": "Mission 10:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey1_6d21bdaf-2962-4e7d-b608-d1e61ff33fdf.json"
+        },
+        {
+            "name": "Mission 11:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/hourglass_ea2fe222-7e54-45bf-bde5-c5d9ac4cb617.json"
+        },
+        {
+            "name": "Mission 12:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey1_ac0c56b4-a410-4238-946d-86283247021c.json"
+        },
+        {
+            "name": "Mission 13:  rectangle2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/rectangle2_f8c2e4ce-2566-41ab-8199-541336121770.json"
+        },
+        {
+            "name": "Mission 14:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/square_52bfbad3-f89f-4757-9b77-caeaa218c29b.json"
+        },
+        {
+            "name": "Mission 15:  survey1",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey1_64d8e09f-c28e-4cd6-8b32-71418c03c4c0.json"
+        },
+        {
+            "name": "Mission 16:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/hourglass_446c3576-63cf-4d1e-88d1-4ab830e81a6c.json"
+        },
+        {
+            "name": "Mission 17:  rectangle2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/rectangle2_c42a8498-8e27-43ff-9935-d6b3ea5b6054.json"
+        },
+        {
+            "name": "Mission 18:  hourglass",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/hourglass_fe6da30f-b000-4456-8f44-3ea0244fcfe6.json"
+        },
+        {
+            "name": "Mission 19:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/circle_c401e167-3c46-4df0-afd7-88ec8a2b926c.json"
+        },
+        {
+            "name": "Mission 20:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/kaleidoscope_d0b66c20-e520-4f58-97cd-08230da4248b.json"
+        },
+        {
+            "name": "Mission 21:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/square_9df0d0c4-fb50-487b-8679-363138f969cd.json"
+        },
+        {
+            "name": "Mission 22:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/rectangle_31985417-fb7d-4f3e-b004-28b0a6d87847.json"
+        },
+        {
+            "name": "Mission 23:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/kaleidoscope_d3c1f9d6-2afc-4064-b561-2cd3bf7f7b1b.json"
+        },
+        {
+            "name": "Mission 24:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/circle_5e9184ca-f9a1-4377-8b2d-3bd673c9c56e.json"
+        },
+        {
+            "name": "Mission 25:  square",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/square_70423658-2f10-45df-a818-51a2f193b20d.json"
+        },
+        {
+            "name": "Mission 26:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/kaleidoscope_d2039fab-b47d-472c-bb20-8e8e41f8f14d.json"
+        },
+        {
+            "name": "Mission 27:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/rectangle_45b0c83d-cc83-4f23-be3e-71d5496114cf.json"
+        },
+        {
+            "name": "Mission 28:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/circle_74eba695-2cd1-47a5-bfac-bf3e2b71fa98.json"
+        },
+        {
+            "name": "Mission 29:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey2_6c675095-05a4-4138-8d41-9a9199a16a23.json"
+        },
+        {
+            "name": "Mission 30:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/rectangle_554cd841-835e-4697-b4c0-f65f2ff1b334.json"
+        },
+        {
+            "name": "Mission 31:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/kaleidoscope_7f10594f-ea9c-4d1b-b6dd-a0e2bb89730f.json"
+        },
+        {
+            "name": "Mission 32:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/circle_3409e15f-293d-4bd4-b40d-227f31a1122b.json"
+        },
+        {
+            "name": "Mission 33:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey2_76904a98-c055-426a-9664-17a7a29091bd.json"
+        },
+        {
+            "name": "Mission 34:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey2_a3428737-a211-469b-99b0-c5d2ff92247e.json"
+        },
+        {
+            "name": "Mission 35:  kaleidoscope",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/kaleidoscope_b379465b-5c2a-48fd-9c90-cbd59e0666e7.json"
+        },
+        {
+            "name": "Mission 36:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/rectangle_80e11141-72bf-46be-b1da-7e4c5d7083d8.json"
+        },
+        {
+            "name": "Mission 37:  circle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/circle_0fa0561f-1c4b-4ffd-8b4c-315ba78894f9.json"
+        },
+        {
+            "name": "Mission 38:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey2_646902c9-bb9c-4905-8904-5ee38e0b88db.json"
+        },
+        {
+            "name": "Mission 39:  rectangle",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/rectangle_944a1348-fa5b-4341-9091-d7350fd28b92.json"
+        },
+        {
+            "name": "Mission 40:  survey2",
+            "excutable": "sdk_ulog_mission.py",
+            "command": "/root/data/ground_truth_2023-05-25/waypoints/survey2_1e20bf4a-7684-45c5-95ee-f4da8025de75.json"
+        }
+    ]
+}

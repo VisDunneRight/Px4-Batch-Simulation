@@ -1,52 +1,59 @@
 import asyncio
 from mavsdk.mission import MissionItem, MissionPlan
-from missionHelperSDK import Mission
+from mission_helpers_module.px4_mission_helpers import mission_helper_sdk
+try:
+    from mission_helpers_module.arduino_mission_helpers import mission_helper_dronekit
+except ModuleNotFoundError as error:
+    print("DRONEKIT NOT INSTALLED...can't run ArduPilot without it")
 import json
 import argparse
 from time import sleep
 import sys
-# from utils.ULogHelper import *
 
 
 async def main():
-
     parser = argparse.ArgumentParser()
     parser.add_argument("mission_path", type=str,
-                        help="the path to the flight plan")
-    # parser.add_argument("ulog_save_path", type=str,
-    #                     help="the path to save the ulog file")
+                        help="the path to the flight plan"
+                        )
+    parser.add_argument("simulator", type=str,
+                        help="name of the simulator being used.")
 
     args = parser.parse_args()
 
-    missionAlt = 10
-    missionSpd = 10
-    mission = Mission()
+    # TODO: Check Mission Type To Run.
+    print(args.simulator)
+    if args.simulator in ["JMavSim", "Gazebo"]:
+        mission = mission_helper_sdk.Mission()
+    elif args.simulator == "ArduPilot":
+        mission = mission_helper_dronekit.Mission()
+    else:
+        print("Not a simulator option")
+        print("CHOOSE:", ["Gazebo", "JMavSim", "ArduPilot"])
+        sys.exit(1)
 
-    await mission.connectVehicle()
-
+    await mission.connect()
     # Task to run in parallel
     print_mission_progress_task = asyncio.ensure_future(
-        mission.printMissionProgress())
+        mission.monitor_mission())
     print_status_task = asyncio.ensure_future(
-        mission.printStatus(verbose=False))
-    print_progress_task = asyncio.ensure_future(mission.printMissionProgress())
+        mission.print_status(verbose=False))
+    print_progress_task = asyncio.ensure_future(mission.monitor_mission())
 
     running_tasks = [print_mission_progress_task,
                      print_status_task, print_progress_task]
 
-    termination_task = asyncio.ensure_future(mission.droneInAir(
+    termination_task = asyncio.ensure_future(mission.drone_in_air(
         running_tasks))  # keeps script running if drone in air
 
-    # to save files same as downloaded ulogs from Px4 server
+    # to save files same as downloaded u_logs from Px4 server
     mission.ulog_filename = args.mission_path.split("/")[-1]
 
     await mission.vehicle.mission.clear_mission()
 
-    homeLat, homeLon = await mission.getHomeLatLon()
-    print(f'home location\n\t>lat:{homeLat}\n\t>lon:{homeLon}')
+    home_lat, home_lon = await mission.get_home_location()
+    print(f'home location\n\t>lat:{home_lat}\n\t>lon:{home_lon}')
     await mission.vehicle.mission.clear_mission()
-
-    mission_items = []
 
     # Load x and y coordinates from ulg file.
     print("Loading ulg file...")
@@ -60,38 +67,36 @@ async def main():
     s = uav_data["velocity"]
     # yaw = uav_data["wp_yaw_deg"]
     print("--CREATING MISSION PLAN")
-    for x, y, missionAlt, missionSpd in zip(x_coord, y_coord, alt, s):
+    for x, y, mission_alt, mission_spd in zip(x_coord, y_coord, alt, s):
+        print(x, y, mission_alt)
 
-        wp = mission.getOffsetFromLocationMeters(
-            homeLat, homeLon, dNorth=y, dEast=x)
+        wp = mission.get_offset_location(original_location=(home_lat, home_lon), d_north=y, d_east=x)
 
-        if missionSpd < 0.5:
+        if mission_spd < 0.5:
             continue
-
         # TODO: Remove this line later
-        missionSpd = 5
-        print(x,y, missionAlt, missionSpd)
-        mission_items.append(MissionItem(wp[0],
-                                         wp[1],
-                                         missionAlt,
-                                         missionSpd,
-                                         is_fly_through=True,
-                                         gimbal_pitch_deg=0,
-                                         gimbal_yaw_deg=0,
-                                         camera_action=MissionItem.CameraAction.NONE,
-                                         loiter_time_s=float('nan'),
-                                         camera_photo_interval_s=float('nan'),
-                                         acceptance_radius_m=float('nan'),
-                                         #  yaw_deg=m_yaw,
-                                         yaw_deg=float('nan'),
-                                         camera_photo_distance_m=float('nan')))
+        mission_spd = 5
+        mission.add_mission_item(MissionItem(wp[0],
+                                             wp[1],
+                                             mission_alt,
+                                             mission_spd,
+                                             is_fly_through=True,
+                                             gimbal_pitch_deg=0,
+                                             gimbal_yaw_deg=0,
+                                             camera_action=MissionItem.CameraAction.NONE,
+                                             loiter_time_s=float('nan'),
+                                             camera_photo_interval_s=float('nan'),
+                                             acceptance_radius_m=float('nan'),
+                                             #  yaw_deg=m_yaw,
+                                             yaw_deg=float('nan'),
+                                             camera_photo_distance_m=float('nan')))
 
     await mission.vehicle.mission.set_return_to_launch_after_mission(True)
 
-    mission_plan = MissionPlan(mission_items)
+    mission_plan = MissionPlan(mission.mission_items)
     print("-- Uploading mission")
-    await mission.uploadMission(mission_plan)
-    
+    await mission.upload_mission(mission_plan)
+
     sleep(5)
     print("-- Arming")
     await mission.arm()
@@ -99,10 +104,11 @@ async def main():
     sleep(5)
 
     print("-- Starting mission")
-    await mission.startMission()
+    await mission.start_mission()
 
     await termination_task
     print("--Finishing mission")
+
 
 if __name__ == "__main__":
     # main()
@@ -110,5 +116,6 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         # loop.run_until_complete(takeoff_land(20))
         loop.run_until_complete(main())
-    except:
+    except Exception as err:
+        print(err)
         sys.exit(1)

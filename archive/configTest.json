@@ -1,0 +1,18 @@
+{
+  "mavlink_connection": "",
+  "test_directory":"missions/",
+  "tests":[
+    {
+      "name": "Mission 1: Takeoff and land",
+      "excutable": "sdk_takeoff_and_land.py"
+    },
+    {
+      "name": "Mission 2: Takeoff and land",
+      "excutable": "sdk_takeoff_and_land.py"
+    },
+    {
+      "name": "Mission 3: Takeoff and land",
+      "excutable": "sdk_takeoff_and_land.py"
+    }
+  ]
+}

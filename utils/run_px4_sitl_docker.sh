@@ -1,0 +1,1 @@
+echo "docker run -it --rm --name px4_sitl -v $(pwd):/root/code -v /Volumes/Lisko_Drive/Px4-Data:/root/data/  px4_sitl"
