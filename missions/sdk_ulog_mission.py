@@ -21,8 +21,6 @@ async def main():
 
     args = parser.parse_args()
 
-    # TODO: Check Mission Type To Run.
-    print(args.simulator)
     if args.simulator in ["JMavSim", "Gazebo"]:
         mission = mission_helper_sdk.Mission()
     elif args.simulator == "ArduPilot":

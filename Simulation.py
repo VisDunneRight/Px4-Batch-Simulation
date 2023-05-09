@@ -200,7 +200,8 @@ class Tester:
             )
 
         elif self.simulator == 'ArduPilot':
-            
+            print("Running ArduPilot")
+            sys.exit(0)
 
         else:
             print("The simulator " + self.simulator + "is not yet implemented.")
