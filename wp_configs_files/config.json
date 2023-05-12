@@ -4,13 +4,13 @@
     "tests": [
         {
             "name": "Mission 1:  square",
-            "excutable": "sdk_ulog_mission.py",
-            "command": "/root/code/missions/mission_helpers_module/test_wps/square_rdp_clean_9df0d0c4-fb50-487b-8679-363138f969cd.json"
+            "executable": "sdk_ulog_mission.py",
+            "command": "/media/sf_Px4-Batch-Simulation/missions/mission_helpers_module/test_wps/square_rdp_clean_9df0d0c4-fb50-487b-8679-363138f969cd.json"
         },
         {
             "name": "Mission 2:  spiral",
-            "excutable": "sdk_ulog_mission.py",
-            "command": "/root/code/missions/mission_helpers_module/test_wps/spiral_rdp_clean_4ddb8bc1-17e2-4b46-ae3f-f3efd3b31908.json"
+            "executable": "sdk_ulog_mission.py",
+            "command": "/media/sf_Px4-Batch-Simulation/missions/mission_helpers_module/test_wps/spiral_rdp_clean_4ddb8bc1-17e2-4b46-ae3f-f3efd3b31908.json"
         }
     ]
 }

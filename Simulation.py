@@ -10,8 +10,10 @@ import subprocess
 import time
 import threading
 import atexit
+import shlex
 from logger_helper import color, colorize
 from typing import Any, Dict, List, NoReturn, Optional, TextIO
+from subprocess_manager.subprocess_manager import SubProcessManager
 
 # import mavsdk.log_files as logs
 
@@ -20,7 +22,7 @@ TIME_BETWEEN_RUNS = 5
 
 def main() -> NoReturn:
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--simulator", help="Simulation to use: Gazebo, JMavSim or AirSim",
+    parser.add_argument("-s", "--simulator", help="Simulation to use: Gazebo, JMavSim, ArduPilot or AirSim",
                         default="Gazebo")
     parser.add_argument("--log-dir",
                         help="Directory for log files", default="logs")
@@ -69,7 +71,7 @@ def isEverythingReady(config: Dict[str, str], args: Dict[str, str]) -> bool:
         print("px4 process already running\n"
               "run `killall px4` and try again")
         result = False
-    if not os.path.isdir(args.build_dir):
+    if args.simulator in ["Gazebo" "JMavSim"] and not os.path.isdir(args.build_dir):
         print("PX4 is not placed in build_dir\n"
               "Make sure to install PX4 or correctly link to it before running this script "
               )
@@ -200,12 +202,23 @@ class Tester:
             )
 
         elif self.simulator == 'ArduPilot':
-            print("Running ArduPilot")
-            sys.exit(0)
+            # Commands for Ardu and Gazebo
+            gz_command = shlex.split("gzserver --verbose worlds/iris_arducopter_runway.world")
+            ardu_command = shlex.split("sim_vehicle.py -v ArduCopter -f gazebo-iris --console")
+
+            # Start gz-server
+            gz_process = SubProcessManager("gz_server", command=gz_command)
+            gz_process.start_process()
+            # Start Ardupilot
+            ardu_process = SubProcessManager("ardupilot", command=ardu_command)
+            ardu_process.start_process()
+
+            time.sleep(10)
 
         else:
             print("The simulator " + self.simulator + "is not yet implemented.")
             exit()
+
         self.stop_thread = threading.Event()
         # self.thread = threading.Thread(target=self.process_output)
         # self.thread.start()
@@ -213,7 +226,6 @@ class Tester:
         time.sleep(TIME_BETWEEN_RUNS)
 
         try:
-            print(self.simulator)
             missionCommand = ["python3", test['excutable']]
 
             if "command" in test:
@@ -225,7 +237,7 @@ class Tester:
                                      cwd=self.config['test_directory'],
                                      timeout=1200)
 
-            if (mission.returncode > 0):
+            if mission.returncode > 0:
                 return 1
             else:
                 return 0
@@ -233,6 +245,9 @@ class Tester:
         except subprocess.TimeoutExpired:
             print('Process ran too long')
         # self.process_output()
+
+        ardu_process.hard_stop_process()
+        gz_process.hard_stop_process()
         self.stopProcess()
         return 2
 

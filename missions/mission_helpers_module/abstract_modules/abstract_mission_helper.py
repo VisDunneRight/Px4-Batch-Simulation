@@ -69,7 +69,7 @@ class AbstractMissionHelper(ABC):
         pass
 
     @abstractmethod
-    def add_mission_item(self, mission_item):
+    def add_mission_item(self,  d_north, d_east, altitude, cmd_type=None):
         """Add a mission item to the mission.
 
         This method should add a mission item to the mission sequence.
@@ -79,17 +79,18 @@ class AbstractMissionHelper(ABC):
 
         Returns:
             None
+            :param d_north:
+            :param cmd_type:
+            :param d_east:
+            :param altitude:
         """
         pass
 
     @abstractmethod
-    def upload_mission(self, mission_items) -> None:
+    def upload_mission(self) -> None:
         """Upload the mission to the drone.
 
         This method should upload the mission to the drone so that it can be executed.
-
-        Args:
-            mission_items (List[Any]): A list of mission items to upload to the drone.
 
         Returns:
             None
@@ -107,6 +108,15 @@ class AbstractMissionHelper(ABC):
             A tuple containing the latitude, longitude, and altitude of the home location.
         """
         pass
+
+    @abstractmethod
+    def clear_mission(self):
+        """
+        Clear any missions that are stored on the vehicle.
+
+        :return:
+            None
+        """
 
     @abstractmethod
     def monitor_mission(self):

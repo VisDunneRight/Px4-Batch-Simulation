@@ -28,6 +28,9 @@ class Mission(AbstractMissionHelper):
     def add_mission_item(self, mission_item):
         self.mission_items.append(mission_item)
 
+    def clear_mission(self):
+        self.vehicle.mission.clear_mission()
+
     # Get arguments and connect information
     def get_arguments(self) -> Namespace:
         parser = argparse.ArgumentParser()
