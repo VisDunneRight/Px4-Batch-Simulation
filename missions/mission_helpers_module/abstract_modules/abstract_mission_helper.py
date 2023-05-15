@@ -69,7 +69,7 @@ class AbstractMissionHelper(ABC):
         pass
 
     @abstractmethod
-    def add_mission_item(self,  d_north, d_east, altitude, cmd_type=None):
+    def add_mission_item(self,  d_north, d_east, altitude, speed, cmd_type=None):
         """Add a mission item to the mission.
 
         This method should add a mission item to the mission sequence.
@@ -79,6 +79,7 @@ class AbstractMissionHelper(ABC):
 
         Returns:
             None
+            :param speed:
             :param d_north:
             :param cmd_type:
             :param d_east:
@@ -142,6 +143,9 @@ class AbstractMissionHelper(ABC):
         """
         pass
 
+    def close_connection(self):
+        pass
+
     @staticmethod
     def get_offset_location(original_location, d_north, d_east):
         """
@@ -181,3 +185,5 @@ class AbstractMissionHelper(ABC):
             return LocationGlobal(new_lat, new_lon, original_alt)
         else:
             return new_lat, new_lon
+
+

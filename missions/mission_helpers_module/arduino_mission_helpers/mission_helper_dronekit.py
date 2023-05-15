@@ -3,7 +3,8 @@ import time
 from dronekit import connect, VehicleMode, Command
 from pymavlink import mavutil
 from mission_helpers_module.arduino_mission_helpers.constants import RTL, GUIDED, AUTO
-from mission_helpers_module.abstract_modules.abstract_mission_helper import AbstractMissionHelper
+# from mission_helpers_module.abstract_modules.abstract_mission_helper import AbstractMissionHelper
+from ..abstract_modules.abstract_mission_helper import AbstractMissionHelper
 
 
 class Mission(AbstractMissionHelper):
@@ -46,13 +47,14 @@ class Mission(AbstractMissionHelper):
         while not self.vehicle.arm:
             time.sleep(1)
 
-    def add_mission_item(self, latitude, longitude, altitude, cmd_type=mavutil.mavlink.MAV_CMD_NAV_WAYPOINT):
+    def add_mission_item(self, latitude, longitude, altitude, cmd_type=mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, speed=None):
         """
         Add a new waypoint to the mission.
 
         This function creates a new waypoint based on the provided parameters, and adds it to the mission.
         The waypoint is created as an offset from the home location.
 
+        :param speed:
         :param cmd_type:
         :param altitude:
         :param longitude:
@@ -157,7 +159,6 @@ class Mission(AbstractMissionHelper):
 
     async def close_connection(self):
         """Close vehicle connection"""
-        # self.vehicle.download()
         print("Closing connection")
         self.vehicle.close()
 

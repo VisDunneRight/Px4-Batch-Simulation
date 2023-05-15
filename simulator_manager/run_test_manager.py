@@ -27,11 +27,10 @@ class RunTestManager:
 
     def run_testcase(self, test_number, test_dir, build_dir=None) -> int:
         test = self.tests[test_number]
-
         try:
             # Start the simulator
             self.sim_manager.start_simulator(build_dir)
-            self.stop_thread = threading.Event()
+            # self.stop_thread = threading.Event()
             print("Next run in {} seconds".format(TIME_BETWEEN_RUNS))
 
             # Run the mission
@@ -41,6 +40,7 @@ class RunTestManager:
                 mission_command.append(test["command"])
                 mission_command.append(self.simulator)
 
+            print("running test")
             run_results = subprocess.run(
                 mission_command,
                 cwd=test_dir,
@@ -50,6 +50,8 @@ class RunTestManager:
             print("RESULTS", run_results.returncode)
 
             self.sim_manager.stop_simulator()
+            # TODO
+            # self.stop_thread.stopProcess()
             if run_results.returncode > 0:
                 return 1
             else:

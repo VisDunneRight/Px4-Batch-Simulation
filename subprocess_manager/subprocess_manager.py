@@ -8,17 +8,24 @@ class SubProcessManager:
         self.command = command
         self.process = None
         self.name = process_name
+        self.cwd = None
 
-    def start_process(self, cwd=None) -> None:
+    def start_process(self) -> None:
         if self.process is not None:
             raise RuntimeError(f"{self.name} is already running.")
         self.process = subprocess.Popen(
             self.command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=cwd,
+            cwd=self.cwd,
             universal_newlines=True
         )
+
+        while self.is_process_running() is None:
+            print("Waiting for simulator...", end="\r")
+
+    def set_cwd(self, cwd):
+        self.cwd = cwd
 
     def is_process_running(self):
         return self.process is not None and self.process.poll() is None
@@ -47,7 +54,6 @@ class SubProcessManager:
         print(f"{self.name} process closing...")
         self.process.wait()
         print(f"{self.name} process stopped.")
-
 
     def read_output(self):
         if self.process is None:

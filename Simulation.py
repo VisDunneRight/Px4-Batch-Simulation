@@ -250,7 +250,6 @@ class Tester:
         gz_process.hard_stop_process()
         self.stopProcess()
         return 2
-
     def stopProcess(self):
         # Kill all process and get control back
         atexit.unregister(self.stopProcess)
@@ -271,7 +270,6 @@ class Tester:
         print("Stop_thread set")
         # self.thread.join()
         os.system('stty sane')
-
 
 if __name__ == '__main__':
     main()

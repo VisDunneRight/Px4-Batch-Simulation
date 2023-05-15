@@ -1,5 +1,5 @@
 from simulator_manager.run_test_manager import RunTestManager
-from simulator_manager.pre_flight_check import  FlightPreCheck
+from simulator_manager.pre_flight_check import FlightPreCheck
 
 from typing import NoReturn, Dict
 import argparse
@@ -36,8 +36,12 @@ def main() -> NoReturn:
     if not FlightPreCheck.is_ready(config, args):
         sys.exit(1)
 
+    build_dir = None
+    if args.simulator in ["Gazebo", "JMavSim"]:
+        build_dir = args.build_dir
+
     run_test_manager = RunTestManager(config["tests"], args.simulator)
-    run_test_manager.run_testcase(0, test_dir=config["test_directory"],)
+    run_test_manager.run_testcase(0, test_dir=config["test_directory"], build_dir=build_dir)
 
 
 if __name__ == "__main__":

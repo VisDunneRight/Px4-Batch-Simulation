@@ -2,12 +2,9 @@ from subprocess_manager.subprocess_manager import SubProcessManager
 import shlex
 
 
-def build_gazebo_command(build_dir):
-    pass
-
-
-def build_jmavsim_command(build_dir):
-    pass
+def build_px4_command(px4_simulator):
+    command = shlex.split(f"make px4_sitl {px4_simulator} HEADLESS=1")
+    return SubProcessManager(px4_simulator.lower(), command=command)
 
 
 def build_ardu_pilot_command():
@@ -22,8 +19,8 @@ def build_ardu_pilot_command():
 
 
 SITL_START_FUNCTIONS = {
-    "Gazebo": build_gazebo_command,
-    "JMavSim": build_jmavsim_command,
+    "Gazebo": build_px4_command("gazebo"),
+    "JMavSim": build_px4_command("jmavsim"),
     "ArduPilot": build_ardu_pilot_command
 }
 
@@ -34,15 +31,19 @@ class SimulatorManager:
 
         if simulator not in SITL_START_FUNCTIONS:
             raise ValueError(f"Unknown simulator {simulator}")
-        self.processes = SITL_START_FUNCTIONS[simulator]()
+        self.processes = SITL_START_FUNCTIONS[simulator]
 
     def start_simulator(self, build_dir=None):
         if self.simulator == "ArduPilot":
-            [ardu_process, gz_process] = self.processes
+            [ardu_process, gz_process] = self.processes()
             gz_process.start_process()
-            ardu_process.start_process(cwd=build_dir)
+            ardu_process.start_process()
         else:
-            self.processes.start_process(cwd=build_dir)
+            if build_dir:
+                self.processes.set_cwd(cwd=build_dir)
+            self.processes.start_process()
+
+            print("Simulator Started")
 
     def stop_simulator(self):
         if self.simulator == "ArduPilot":
