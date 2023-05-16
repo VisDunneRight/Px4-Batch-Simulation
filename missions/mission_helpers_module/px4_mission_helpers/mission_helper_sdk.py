@@ -31,6 +31,7 @@ class Mission(AbstractMissionHelper):
         self.mission_items = []
         self.arm_tries = 0
         self.close = False
+        self.mission_name = None
 
     def add_mission_item(self, latitude, longitude, altitude, speed, cmd=None):
         self.mission_items.append(MissionItem(latitude,
@@ -51,6 +52,9 @@ class Mission(AbstractMissionHelper):
     async def clear_mission(self):
         if self.vehicle.mission:
             await self.vehicle.mission.clear_mission()
+
+    def set_mission_name(self, mission_name):
+        self.mission_name = mission_name
 
     # Get arguments and connect information
     def get_arguments(self) -> Namespace:
@@ -209,13 +213,11 @@ class Mission(AbstractMissionHelper):
     # Methods for downloading log files
     async def download_log(self, entry, suffix=""):
         try:
-            if self.ulog_filename is None:
-                self.ulog_filename = entry.date.replace(":", "-")
-            else:
-                self.ulog_filename = self.ulog_filename.rstrip(".json")
+            if self.mission_name is None:
+                self.mission_name = entry.date.replace(":", "-")
 
             # TODO: Allow for input of log file name
-            filename = f"/root/data/sim_{suffix}_{self.ulog_filename}.ulg"
+            filename = f"/root/data/sim_{suffix}_{self.mission_name}.ulg"
             # print(f"Downloading: log {entry.id} from {entry.date} to{filename}")
             # await self.vehicle.log_files.download_log_file(entry, filename)
             # print("Done...")

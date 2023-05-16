@@ -42,6 +42,10 @@ class AbstractMissionHelper(ABC):
         pass
 
     @abstractmethod
+    def set_mission_name(self, mission_name):
+        pass
+
+    @abstractmethod
     def connect(self) -> None:
         """Connect to the drone.
 
@@ -145,6 +149,7 @@ class AbstractMissionHelper(ABC):
 
     def close_connection(self):
         pass
+
 
     @staticmethod
     def get_offset_location(original_location, d_north, d_east):

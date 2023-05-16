@@ -1,4 +1,6 @@
+import shutil
 import sys
+import os
 import time
 from dronekit import connect, VehicleMode, Command
 from pymavlink import mavutil
@@ -10,16 +12,22 @@ from ..abstract_modules.abstract_mission_helper import AbstractMissionHelper
 class Mission(AbstractMissionHelper):
     """ Mission Helper for ArduinoPilot"""
 
-    def __init__(self, connection_string="127.0.0.1:14551"):
+    def __init__(self, download_dir="../logs", connection_string="127.0.0.1:14551"):
         self.sim_address = connection_string
         self.vehicle = None
         self.waypoints = []
         self.mission_items = []
         self.home_location = None
+        self.log_dir = "../logs"
+        self.download_dir = download_dir
+        self.mission_name = None
 
     async def get_home_location(self) -> tuple:
         """ Get the starting location for the vehicle."""
         return self.home_location.lat, self.home_location.lon
+
+    def set_mission_name(self, mission_name):
+        self.mission_name = mission_name
 
     def set_home_location(self):
         try:
@@ -36,6 +44,8 @@ class Mission(AbstractMissionHelper):
         print(self.vehicle)
         self.set_home_location()
         print("HOME LAT", self.home_location.lat, "HOME LON", self.home_location.lon)
+        await self.clear_flight_logs()
+        print(os.listdir(os.curdir))
 
     async def arm(self):
         """ Arm the vehicle"""
@@ -130,7 +140,6 @@ class Mission(AbstractMissionHelper):
         # This will start the mission
         self.vehicle.mode = VehicleMode(AUTO)
         await self.monitor_mission()
-        await self.return_to_launch()
 
     async def monitor_mission(self):
         """Monitor the mission."""
@@ -159,8 +168,34 @@ class Mission(AbstractMissionHelper):
 
     async def close_connection(self):
         """Close vehicle connection"""
+        await self.return_to_launch()
+        await self.download_flight_log()
         print("Closing connection")
         self.vehicle.close()
+
+    async def download_flight_log(self):
+        files = os.listdir(self.log_dir)
+        for file in files:
+            if ".bin" in file.lower():
+                rename = f"sim_{self.mission_name}.bin"
+                os.rename(
+                    os.path.join(self.log_dir, file),
+                    os.path.join(self.log_dir, rename)
+                )
+                src = os.path.join(self.log_dir, rename)
+                dest = os.path.join(self.download_dir, rename)
+                shutil.move(src, dest)
+        await self.clear_flight_logs()
+
+    async def clear_flight_logs(self):
+        os.path.isdir(self.log_dir)
+        items_in_dir = os.listdir(self.log_dir)
+        if len(items_in_dir) > 0:
+            for file in items_in_dir:
+                if not file.lower().startswith("sim"):
+                    file_path = os.path.join(self.log_dir, file)
+                    os.remove(file_path)
+
 
 #
 #
