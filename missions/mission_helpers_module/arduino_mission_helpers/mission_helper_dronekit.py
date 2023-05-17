@@ -12,14 +12,14 @@ from ..abstract_modules.abstract_mission_helper import AbstractMissionHelper
 class Mission(AbstractMissionHelper):
     """ Mission Helper for ArduinoPilot"""
 
-    def __init__(self, download_dir="../logs", connection_string="127.0.0.1:14551"):
+    def __init__(self, connection_string="127.0.0.1:14551"):
         self.sim_address = connection_string
         self.vehicle = None
         self.waypoints = []
         self.mission_items = []
         self.home_location = None
-        self.log_dir = "../logs"
-        self.download_dir = download_dir
+        self.download_dir = "../logs"
+        self.logs_dir = "../logs"
         self.mission_name = None
 
     async def get_home_location(self) -> tuple:
@@ -28,6 +28,9 @@ class Mission(AbstractMissionHelper):
 
     def set_mission_name(self, mission_name):
         self.mission_name = mission_name
+
+    def set_log_dir(self, download_dir):
+        self.download_dir = download_dir
 
     def set_home_location(self):
         try:
@@ -174,30 +177,30 @@ class Mission(AbstractMissionHelper):
         self.vehicle.close()
 
     async def download_flight_log(self):
-        files = os.listdir(self.log_dir)
+        files = os.listdir(self.logs_dir)
+        os.makedirs(self.download_dir, exist_ok=True)
         for file in files:
             if ".bin" in file.lower():
-                rename = f"sim_{self.mission_name}.bin"
-                os.rename(
-                    os.path.join(self.log_dir, file),
-                    os.path.join(self.log_dir, rename)
-                )
-                src = os.path.join(self.log_dir, rename)
-                dest = os.path.join(self.download_dir, rename)
-                shutil.move(src, dest)
+                new_name = f"sim_{self.mission_name}.bin"
+                src = os.path.join(self.logs_dir, file)
+                dest = os.path.join(self.download_dir, new_name)
+                os.rename(src, os.path.join(self.logs_dir, new_name))
+                shutil.move(os.path.join(self.logs_dir, new_name), dest)
+
         await self.clear_flight_logs()
 
     async def clear_flight_logs(self):
-        os.path.isdir(self.log_dir)
-        items_in_dir = os.listdir(self.log_dir)
+        if not os.path.isdir(self.logs_dir):
+            os.makedirs(self.logs_dir)
+
+        items_in_dir = os.listdir(self.logs_dir)
         if len(items_in_dir) > 0:
             for file in items_in_dir:
                 if not file.lower().startswith("sim"):
-                    file_path = os.path.join(self.log_dir, file)
+                    file_path = os.path.join(self.logs_dir, file)
                     os.remove(file_path)
 
 
-#
 #
 # if __name__ == '__main__':
 #     main()

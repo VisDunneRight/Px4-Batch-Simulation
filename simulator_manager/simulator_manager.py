@@ -4,6 +4,7 @@ from subprocess_manager.subprocess_manager import SubProcessManager
 import shlex
 from typing import Union
 
+
 def build_px4_command(px4_simulator):
     command = shlex.split(f"make px4_sitl {px4_simulator} HEADLESS=1")
     return SubProcessManager(px4_simulator.lower(), command=command)

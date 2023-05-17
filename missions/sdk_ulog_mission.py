@@ -19,11 +19,16 @@ async def main():
                         )
     parser.add_argument("simulator", type=str,
                         help="name of the simulator being used.")
+    parser.add_argument("--save-dir", type=str, help="Where to save to flight log.")
+
+
+
 
     args = parser.parse_args()
+
+
     # get the name of the mission.
     mission_name = args.mission_path.split("/")[-1].rstrip(".json")
-
 
     if args.simulator in ["JMavSim", "Gazebo"]:
         mission = mission_helper_sdk.Mission()
@@ -36,11 +41,12 @@ async def main():
 
     mission.set_mission_name(mission_name)
 
-    print("CONNECT")
+    if args.save_dir:
+        mission.set_log_dir(args.save_dir)
     await mission.connect()
-    # # to save files same as downloaded u_logs from Px4 server
-    # mission.ulog_filename = args.mission_path.split("/")[-1]
-    #
+    # to save files same as downloaded u_logs from Px4 server
+    mission.ulog_filename = args.mission_path.split("/")[-1]
+
     home_lat, home_lon = await mission.get_home_location()
     print(f'home location\n\t>lat:{home_lat}\n\t>lon:{home_lon}')
     await mission.clear_mission()
@@ -56,7 +62,6 @@ async def main():
     alt = uav_data["altitude"]
     s = uav_data["velocity"]
 
-    # mission_number = 1
     print("GENERATING MISSION PLAN...")
     for x, y, mission_alt, mission_spd in zip(x_coord, y_coord, alt, s):
         new_lat, new_lon = mission.get_offset_location(original_location=(home_lat, home_lon), d_north=y, d_east=x)
@@ -65,10 +70,7 @@ async def main():
         # Have to figure out how to set speed with dronekit,
         # TODO: ADD Velocity for ArduPilot
         mission_spd = 5 if args.simulator in ["Gazebo", "JMavSim"] else None
-        # if mission_number == 2:
-        #     break
         mission.add_mission_item(latitude=new_lat, longitude=new_lon, altitude=10, speed=mission_spd)
-        # mission_number += 1
     print("UPLOADING MISSION PLAN...")
     await mission.upload_mission()
     sleep(5)
@@ -79,7 +81,6 @@ async def main():
 
     print("-- Starting mission")
     await mission.start_mission()
-    # await termination_task
     await mission.close_connection()
     print("--Finishing mission")
     await asyncio.sleep(2)

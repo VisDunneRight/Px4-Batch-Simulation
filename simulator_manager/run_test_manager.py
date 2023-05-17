@@ -16,6 +16,7 @@ class RunTestManager:
         self.sim_manager = SimulatorManager(self.simulator)
         self.stop_thread = None
         self.abort_early = args.abort_early
+        self.save_log_dir = args.log_dir
 
         # Set adjust Simulators parameters.
         for key, value in vars(args).items():
@@ -58,15 +59,15 @@ class RunTestManager:
                 mission_command.append(test["command"])
                 mission_command.append(self.simulator)
 
+            mission_command.append("--save-dir")
+            mission_command.append(self.save_log_dir)
+
             # print("running test")
             run_results = subprocess.run(
                 mission_command,
                 cwd=test_dir,
                 timeout=TIMEOUT_LENGTH
             )
-
-            print("RESULTS", run_results.returncode)
-
             self.sim_manager.stop_simulator()
 
             if run_results.returncode > 0:
