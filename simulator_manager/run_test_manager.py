@@ -1,9 +1,7 @@
 from simulator_manager.simulator_manager import SimulatorManager
 from subprocess import TimeoutExpired
 import subprocess
-import threading
-import time
-import shlex
+from logger_helper import color, colorize
 
 TIME_BETWEEN_RUNS = 5
 TIMEOUT_LENGTH = 1200
@@ -11,19 +9,40 @@ TIMEOUT_LENGTH = 1200
 
 class RunTestManager:
 
-    def __init__(self, tests, simulator):
+    def __init__(self, tests, args):
         self.tests = tests
-        self.simulator = simulator
+        self.simulator = args.simulator
         self.num_cases = len(tests)
-        self.sim_manager = SimulatorManager(simulator)
+        self.sim_manager = SimulatorManager(self.simulator)
         self.stop_thread = None
+        self.abort_early = args.abort_early
 
-    def run_all_test(self):
+        # Set adjust Simulators parameters.
+        for key, value in vars(args).items():
+            if key in ["show_console", "show_map", "speed_factor"]:
+                self.sim_manager.set_argument(argument=key, arg_setting=value)
+
+    def set_abort_early(self, abort_early=False):
+        self.abort_early = abort_early
+
+    def run_all_test(self, test_dir, build_dir=None) -> None:
         for index, test in enumerate(self.tests):
             print(f"---> Test case {index} of {self.num_cases}: running ... {test['name']}")
 
             was_success = 0
-            # TODO: comeback to this...
+            for attempt_number in range(2):
+                was_success = self.run_testcase(index, test_dir, build_dir)
+                if was_success == 0:
+                    break
+                print(f"Re-running test case {index}")
+
+            # Update on success or failure of the flight.
+            success_message = colorize('succeeded', color.GREEN) if was_success == 0 else colorize("failed", color.RED)
+            print(f"Test case {index + 1} of {self.num_cases}: {success_message}")
+
+            if was_success != 0 and self.abort_early:
+                print(colorize("ABORTING EARLY", color.YELLOW))
+                return
 
     def run_testcase(self, test_number, test_dir, build_dir=None) -> int:
         test = self.tests[test_number]
