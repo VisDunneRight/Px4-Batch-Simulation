@@ -5,8 +5,8 @@ import shlex
 from typing import Union
 
 
-def build_px4_command(px4_simulator):
-    command = shlex.split(f"make px4_sitl {px4_simulator} HEADLESS=1")
+def build_px4_command(px4_simulator, sim_speed=1):
+    command = shlex.split(f"make px4_sitl {px4_simulator} HEADLESS=1 PX4_SIM_SPEED_FACTOR={sim_speed}")
     return SubProcessManager(px4_simulator.lower(), command=command)
 
 
@@ -31,18 +31,18 @@ def build_ardu_pilot_command(sim_speed=1, show_console=False, show_map=False):
 
 
 SITL_START_FUNCTIONS = {
-    "Gazebo": build_px4_command("gazebo"),
-    "JMavSim": build_px4_command("jmavsim"),
+    "Gazebo": build_px4_command,
+    "JMavSim": build_px4_command,
     "ArduPilot": build_ardu_pilot_command
 }
 
 
 class SimulatorManager:
     def __init__(self, simulator):
+        self.process = None
         self.ardu_process = None
         self.gz_process = None
-        self.simulator = simulator
-
+        self.simulator = simulator.lower()
         self.speed_factor = 1
         self.show_console = False
         self.show_map = False
@@ -67,9 +67,10 @@ class SimulatorManager:
             self.gz_process.start_process()
             self.ardu_process.start_process()
         else:
+            self.process = self.processes(self.simulator, self.speed_factor)
             if build_dir:
-                self.processes.set_cwd(cwd=build_dir)
-            self.processes.start_process()
+                self.process.set_cwd(cwd=build_dir)
+            self.process.start_process()
             print("Simulator Started")
 
     def stop_simulator(self):
@@ -78,5 +79,5 @@ class SimulatorManager:
             self.ardu_process.hard_stop_process()
             self.gz_process.hard_stop_process()
         else:
-            self.processes.hard_stop_process()
+            self.process.hard_stop_process()
 

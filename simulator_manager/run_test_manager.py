@@ -4,7 +4,7 @@ import subprocess
 from logger_helper import color, colorize
 
 TIME_BETWEEN_RUNS = 5
-TIMEOUT_LENGTH = 1200
+TIMEOUT_LENGTH = 900
 
 
 class RunTestManager:
@@ -37,7 +37,7 @@ class RunTestManager:
                     break
                 print(f"Re-running test case {index}")
 
-            # Update on success or failure of the flight.
+            # Prints success or failure of the flight.
             success_message = colorize('succeeded', color.GREEN) if was_success == 0 else colorize("failed", color.RED)
             print(f"Test case {index + 1} of {self.num_cases}: {success_message}")
 
@@ -69,7 +69,6 @@ class RunTestManager:
                 timeout=TIMEOUT_LENGTH
             )
             self.sim_manager.stop_simulator()
-
             if run_results.returncode > 0:
                 return 1
             else:
@@ -81,7 +80,6 @@ class RunTestManager:
             exit(1)
         except KeyError as error:
             print("KeyError:", error)
-
         except TimeoutExpired:
             print("Process ran to long...")
 

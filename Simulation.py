@@ -160,7 +160,6 @@ class Tester:
             if was_success != 0 and self.abort_early:
                 print("Aborting early")
                 return
-
         return
 
     def poll(self) -> Optional[int]:

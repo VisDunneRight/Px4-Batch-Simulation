@@ -5,12 +5,12 @@
         {
             "name": "Mission 1:  square",
             "executable": "sdk_ulog_mission.py",
-            "command": "/media/sf_Px4-Batch-Simulation/missions/mission_helpers_module/test_wps/square_rdp_clean_9df0d0c4-fb50-487b-8679-363138f969cd.json"
+            "command": "/Users/daniel/github_dir/Px4-Batch-Simulation/missions/mission_helpers_module/test_wps/square_rdp_clean_9df0d0c4-fb50-487b-8679-363138f969cd.json"
         },
         {
             "name": "Mission 2:  spiral",
             "executable": "sdk_ulog_mission.py",
-            "command": "/media/sf_Px4-Batch-Simulation/missions/mission_helpers_module/test_wps/spiral_rdp_clean_4ddb8bc1-17e2-4b46-ae3f-f3efd3b31908.json"
+            "command": "/Users/daniel/github_dir/Px4-Batch-Simulation/missions/mission_helpers_module/test_wps/spiral_rdp_clean_4ddb8bc1-17e2-4b46-ae3f-f3efd3b31908.json"
         }
     ]
 }

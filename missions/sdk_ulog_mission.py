@@ -20,13 +20,7 @@ async def main():
     parser.add_argument("simulator", type=str,
                         help="name of the simulator being used.")
     parser.add_argument("--save-dir", type=str, help="Where to save to flight log.")
-
-
-
-
     args = parser.parse_args()
-
-
     # get the name of the mission.
     mission_name = args.mission_path.split("/")[-1].rstrip(".json")
 
@@ -50,11 +44,9 @@ async def main():
     home_lat, home_lon = await mission.get_home_location()
     print(f'home location\n\t>lat:{home_lat}\n\t>lon:{home_lon}')
     await mission.clear_mission()
-
     # # Load x and y coordinates from ulg file.
     print("Loading mission plan file...")
     with open(args.mission_path, "r", encoding="utf-8") as input_data:
-        print("input_data")
         uav_data = json.load(input_data)
 
     x_coord = uav_data["x"]
@@ -70,35 +62,31 @@ async def main():
         # Have to figure out how to set speed with dronekit,
         # TODO: ADD Velocity for ArduPilot
         mission_spd = 5 if args.simulator in ["Gazebo", "JMavSim"] else None
-        mission.add_mission_item(latitude=new_lat, longitude=new_lon, altitude=10, speed=mission_spd)
+        mission.add_mission_item(latitude=new_lat, longitude=new_lon, altitude=mission_alt, speed=mission_spd)
+
     print("UPLOADING MISSION PLAN...")
     await mission.upload_mission()
     sleep(5)
-
     print("-- Arming")
     await mission.arm()
-    sleep(5)
+    sleep(3)
 
     print("-- Starting mission")
     await mission.start_mission()
+    sleep(5)
     await mission.close_connection()
     print("--Finishing mission")
-    await asyncio.sleep(2)
-
+    await asyncio.sleep(5)
+    return
 
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
-        loop.close()
-        # print("CLOSING--->")
-        while True:
-            if loop.is_closed():
-                break
-        # print("CLOSED")
+        # Get all tasks that are still running
+        running_tasks = asyncio.all_tasks(loop=loop)
+        # Print the running tasks
+        print("mission done!")
     except Exception as err:
         print(err)
         sys.exit(1)  # Mission Fail
-    #
-    # print("SUCCESS")
-    sys.exit(0)  # Successful

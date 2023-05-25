@@ -8,7 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/terrain" />
       <excludeFolder url="file://$MODULE_DIR$/utils/docker_images/arduino_docker/.vscode" />
     </content>
-    <orderEntry type="jdk" jdkName="venv" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="$MODULE_DIR$/../venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

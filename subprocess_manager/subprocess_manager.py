@@ -12,7 +12,9 @@ class SubProcessManager:
 
     def start_process(self) -> None:
         if self.process is not None:
-            raise RuntimeError(f"{self.name} is already running.")
+            self.process.terminate()
+            print(f"{self.name} is already running. Closing and restarting process.")
+            # raise RuntimeError(f"{self.name} is already running.")
         self.process = subprocess.Popen(
             self.command,
             stdout=subprocess.PIPE,
