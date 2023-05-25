@@ -4,7 +4,7 @@ import time
 
 
 def test_ardupilot():
-    command = shlex.split("sim_vehicle.py -v ArduCopter --console --map")
+    command = shlex.split("sim_vehicle.py -v ArduCopter --console")
     print(command)
     ardu_process = SubProcessManager("ardupilot", command=command)
     ardu_process.start_process()
@@ -25,15 +25,25 @@ def test_gazebo():
     gazebo_process.start_process()
 
     # Start Arduino Pilot.
-    command = shlex.split("sim_vehicle.py -v ArduCopter -f gazebo-iris --console --map")
+    # command = shlex.split("sim_vehicle.py -v ArduCopter -f gazebo-iris --console")
+    command = shlex.split("sim_vehicle.py -v ArduCopter --console")
+
     ardu_process = SubProcessManager("ardupilot", command=command)
     ardu_process.start_process()
+    time.sleep(10)
 
     while ardu_process.is_process_running() and gazebo_process.is_process_running():
+        user_input = input("Close program? enter 'C'")
+        if user_input == "C":
+            ardu_process.stop_process()
+            gazebo_process.stop_process()
         print(ardu_process.poll_process(), end="\r")
 
-    ardu_process.stop_process()
-    gazebo_process.stop_process()
+    if ardu_process.is_process_running():
+        ardu_process.stop_process()
+
+    if gazebo_process.is_process_running():
+        gazebo_process.stop_process()
 
 
 if __name__ == "__main__":
