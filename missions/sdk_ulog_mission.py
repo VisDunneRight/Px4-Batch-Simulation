@@ -60,8 +60,8 @@ async def main():
         if mission_spd < 0.5:
             continue
         # Have to figure out how to set speed with dronekit,
-        # TODO: ADD Velocity for ArduPilot
-        mission_spd = 5 if args.simulator in ["Gazebo", "JMavSim"] else None
+        # TODO: Tried to see how the max set velocity works
+        mission_spd = max(s)
         mission.add_mission_item(latitude=new_lat, longitude=new_lon, altitude=mission_alt, speed=mission_spd)
 
     print("UPLOADING MISSION PLAN...")

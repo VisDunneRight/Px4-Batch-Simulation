@@ -62,7 +62,7 @@ class SimulatorManager:
         setattr(self, argument, arg_setting)
 
     def start_simulator(self, build_dir=None):
-        if self.simulator == "ArduPilot":
+        if self.simulator == "ardupilot":
             [self.ardu_process, self.gz_process] = self.processes(self.speed_factor, self.show_console, self.show_map)
             self.gz_process.start_process()
             self.ardu_process.start_process()
@@ -74,7 +74,7 @@ class SimulatorManager:
             print("Simulator Started")
 
     def stop_simulator(self):
-        if self.simulator == "ArduPilot":
+        if self.simulator == "ardupilot":
             # Stop ArduPilot first...
             self.ardu_process.hard_stop_process()
             self.gz_process.hard_stop_process()
